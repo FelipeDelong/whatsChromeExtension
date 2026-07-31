@@ -1,0 +1,160 @@
+<div class="col-12 hiddenCard">
+    <div class="col-8 d-flex align-items-center justify-content-center">
+        <div class="col-4">
+        </div>
+        <div class="col-8">
+            <div class="textHidden" id="hidden_group" hidden></div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12" style="margin-top: 1rem;">
+    <div class="col-8 d-flex justify-content-start align-items-center">
+        <div class="col-4">
+            <label><b>Nome do Grupo:<b class="textHidden"> * </b></b></label>
+        </div>
+        <div class="col-8">
+            <input id="group" class="form-control" data-id="0" type="text" placeholder="Copie e cole o nome do grupo">
+        </div>
+    </div>
+</div>
+
+<div class="col-12 d-flex" style="margin-top: 1rem;">
+
+    <div class="col-4">
+        <div class="col-6">
+            <label>Contanto:<b class="textHidden"> * </b></label>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-8">
+                <input class="form-control" id="input_contact" data-id="1" type="text" placeholder="Contato">
+            </div>
+            <div class="col-2" style="margin-left: -1rem;">
+                <input class="btn btnAdd2" id="btn_add_contact" type="button" value="Incluir">
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4">
+        <div class="col-7">
+            <label>Palavra-chave:<b class="textHidden"> * </b></label>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-8">
+                <input class="form-control" id="input_keyWord" data-id="2" type="text"
+                    placeholder="Termo a ser encontrado">
+            </div>
+            <div class="col-2" style="margin-left: -1rem;">
+                <input class="btn btnAdd2" id="btn_add_keyWord" type="button" value="Incluir">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-4">
+        <div class="col-6">
+            <label>Resposta:<b class="textHidden"> * </b></label>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-8">
+                <input class="form-control" id="input_response" data-id="3" type="text"
+                    placeholder="Resposta a ser enviada">
+            </div>
+            <div class="col-2" style="margin-left: -1rem;">
+                <input class="btn btnAdd2" id="btn_add_response" type="button" value="Incluir">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="col-12 d-flex" style="margin-top: 1rem; margin-left: .75rem;">
+
+    <div class="col-4">
+        <div class="row d-flex justify-content-center">
+            <div class="col-10 modalCard" id="contact_list">
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4">
+        <div class="row d-flex justify-content-center">
+            <div class="col-10 modalCard" id="keyWord_list">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-4">
+        <div class="row d-flex justify-content-center">
+            <div class="col-10 modalCard" id="response_list">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="col-12 hiddenCard" style="padding: 1rem;">
+    <div class="row">
+        <div class="col-6">
+            <div class="textHidden" id="hidden_date" hidden></div>
+        </div>
+        <div class="col-6" style="text-align: left;">
+            <div class="textHidden" id="hidden_time" hidden></div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12 d-flex justify-content-center mt-2">
+    <div class="col-5">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-start">
+                <label>Data:</label>
+            </div>
+            <div class="col-4">
+                <input class="form-control" id="input_date1" type="date">
+            </div>
+            <div class="col-1 d-flex justify-content-center align-items-center" style="margin-left: -1rem; margin-right: -1rem;">-</div>
+            <div class="col-4">
+                <input class="form-control" id="input_date2" type="date">
+            </div>
+            <div class="col-2" style="margin-left: -1rem;">
+                <input class="btn btnAdd2" id="btn_add_date" type="button" value="Incluir">
+            </div>
+        </div>
+    </div>
+    <div class="col-5">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-start">
+                <label>Horário:</label>
+            </div>
+            <div class="col-4">
+                <input class="form-control" id="input_time1" type="time" style="text-align: center;">
+            </div>
+            <div class="col-1 d-flex justify-content-center align-items-center" style="margin-left: -1rem; margin-right: -1rem;">-</div>
+            <div class="col-4">
+                <input class="form-control" id="input_time2" type="time" style="text-align: center;">
+            </div>
+            <div class="col-2" style="margin-left: -1rem;">
+                <input class="btn btnAdd2" id="btn_add_time" type="button" value="Incluir">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12 mt-3">
+    <div class="row">
+        <div class="col-6">
+            <div class="col-10 d-flex justify-content-end" style="margin-left: 1.5rem;">
+                <div class="col-10 modalCard2" id="date_list">
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="col-10 d-flex justify-content-start">
+                <div class="col-10 modalCard2" id="time_list">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
