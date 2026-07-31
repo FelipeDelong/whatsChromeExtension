@@ -1,0 +1,97 @@
+body {
+    width: 35rem;
+    height: 15rem;
+    max-height: 20rem;
+    overflow-y: auto;
+    background-color: #1E1E1E;
+    color: white;
+}
+
+.div_configuration {
+    position: absolute;
+    bottom: .5rem;
+    right: .5rem;
+}
+
+.btnWhats {
+    background-color: #E50091;
+}
+
+.btnWhats:hover {
+    background-color: #530034;
+}
+
+.btnWhatsOff {
+    background-color: #6E6E6E;
+}
+
+.btnWhatsOff:hover {
+    background-color: #2A2A2A;
+}
+
+.hyperlinkWhats{
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+}
+
+.hyperlinkWhatsOff{
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+}
+
+.divTittle {
+    height: 3rem;
+    font-size: x-large;
+    font-weight: bolder;
+    background-color: #530034;
+    border: solid 1px white;
+    border-radius: 10px;
+    box-sizing: border-box;
+    box-shadow: .5px .5px .5px 0.5px white;
+}
+
+.subtitle {
+    font-size: x-large;
+    font-weight: bolder;
+}
+
+.list {
+    max-height: 15rem;
+    overflow-y: auto;
+}
+
+.title {
+    font-size: large;
+}
+
+.text {
+    font-size: 1.3rem;
+    color: #6E6E6E;
+}
+
+.text2 {
+    font-size: 1.1rem;
+    color: white;
+}
+
+.text.bold {
+    font-weight: bolder;
+    color: white;
+}
+
+.hyperlink {
+    color: white;
+}
+
+.config:hover .hyperlink {
+    color: #E50091;
+    text-decoration: underline;
+    cursor: pointer !important;
+}
+
+.config:hover .gear{
+    fill: #E50091;
+}
+

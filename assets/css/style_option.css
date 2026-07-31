@@ -1,0 +1,229 @@
+body {
+    background-color: #141414;
+    color: white;
+    overflow-x: hidden;
+}
+
+.divbtnAdd {
+    background-color: #2A2A2A;
+    border: solid 1px white;
+    border-radius: 10px;
+    position: fixed;
+    padding: .2rem;
+    height: 4rem;
+    right: .5rem;
+    bottom: 1rem;
+    box-sizing: border-box;
+    box-shadow: 0.7px 0.7px 0.7px 0.7px white;
+}
+
+.btnAdd {
+    color: white;
+    font-size: medium;
+    background-color: #E50091;
+}
+
+.btnAdd:hover {
+    background-color: #530034;
+}
+
+.btnSave {
+    color: white;
+    font-size: medium;
+    background-color: #1E7619;
+}
+
+.btnSave:hover {
+    background-color: #0F3E0D;
+}
+
+
+.title {
+    font-size: 2.5rem;
+    font-weight: bolder;
+    padding: 2rem;
+    padding-top: 1rem;
+}
+
+.important {
+    color: #E50091;
+}
+
+
+
+
+.screen {
+    padding: 2rem;
+}
+
+.idCard {
+    position: absolute;
+    left: -2rem;
+    top: 45%;
+    width: 3rem;
+    text-align: center;
+    font-size: x-large;
+    color: white;
+    background-color: #3D3D3D;
+    border: solid 1px white;
+    border-radius: 10px;
+}
+
+.card {
+    margin: 1rem;
+    min-height: 13rem;
+    color: white;
+    border: solid 1px white;
+    border-radius: 20px;
+    background-color: #3D3D3D;
+    box-sizing: border-box;
+    box-shadow: 1px 1px 1px 0.5px white;
+}
+
+.off {
+    background-color: #1E1E1E;
+    color: #999999;
+    border-color: #999999;
+    box-shadow: 0px 0px 0px 0px #999999;
+}
+
+.offBorder {
+    border-color: #999999 !important;
+    box-shadow: 0px 0px 0px 0px #999999 !important;
+}
+
+.offLeftBorder {
+    border-left: solid 1px #999999 !important;
+}
+
+.divSubtitle {
+    position: relative;
+    left: 0px;
+    top: -1.5rem;
+    height: 3rem;
+    background-color: #530034;
+    border: solid 1px white;
+    border-radius: 10px;
+    box-sizing: border-box;
+    box-shadow: .5px .5px .5px 0.5px white;
+}
+
+.subtitle {
+    font-size: x-large;
+    font-weight: bolder;
+}
+
+.subtitle1 {
+    height: 3rem;
+    padding-left: 2rem;
+    padding-top: 0.2rem;
+    /* color: white; */
+    font-weight: bolder;
+    font-size: 1.3rem;
+}
+
+.subtitle2 {
+    height: 2rem;
+    padding-left: 1rem;
+    padding-top: 0.2rem;
+    /* color: white; */
+    font-weight: bolder;
+    font-size: 1.1rem;
+}
+
+.subcard {
+    min-height: 13rem;
+    max-height: 13rem;
+    overflow-y: auto;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    margin-bottom: 1.5rem;
+    border-left: solid 1px white;
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, .35) transparent;
+}
+
+.subcard2 {
+    min-height: 0rem;
+    max-height: 7rem;
+    overflow-y: auto;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    margin-bottom: 1.5rem;
+    border-left: solid 1px white;
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, .35) transparent;
+}
+
+.subcard::-webkit-scrollbar {
+    width: 8px;
+}
+
+.subcard::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .35);
+    border-radius: 999px;
+}
+
+.subcard::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+.text1 {
+    /* color: white; */
+    padding-left: 1rem;
+    padding-top: .3rem;
+    padding-bottom: .3rem;
+    font-size: 1.5rem;
+    margin: .3rem;
+}
+
+.text2 {
+    /* color: white; */
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+    padding-top: .3rem;
+    padding-bottom: .3rem;
+    border: solid 1px white;
+    border-radius: 5px;
+    margin-left: 1rem;
+    max-width: 85%;
+    box-sizing: border-box;
+    box-shadow: .7px .7px .7px 0.5px white;
+}
+
+
+.btnEdit {
+    color: white;
+    width: 10rem;
+    margin: 1rem;
+    background-color: #530034;
+}
+
+.btnEdit:hover {
+    background-color: #E50091;
+}
+
+.btnActive {
+    color: white;
+    margin: 1rem;
+    width: 10rem;
+    background-color: #530034;
+}
+
+.btnActive:hover {
+    background-color: #E50091;
+}
+
+.btnDelete {
+    color: white;
+    margin: 1rem;
+    width: 10rem;
+    background-color: #530034;
+}
+
+.btnDelete:hover {
+    background-color: #E50091;
+}
