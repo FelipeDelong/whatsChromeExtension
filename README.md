@@ -31,10 +31,10 @@ dependency installation, or dedicated backend.
 ## Usage
 
 1. Open the configuration page from the extension popup.
-2. Select **Adicionar Monitoramento**.
+2. Choose the action for adding a monitoring rule.
 3. Enter a group or contact name, at least one keyword, and at least one reply.
 4. Add participant, date, or time filters when needed.
-5. Confirm the entry, then select **Salvar** to store the configuration.
+5. Confirm the entry, then save the configuration.
 6. Open WhatsApp Web and keep the relevant conversation available in the
    browser.
 
@@ -62,6 +62,7 @@ permissions.
 - [jQuery 3.7.1](assets/licenses/jquery-LICENSE.txt) — MIT License.
 - [jQuery btnSwitch 1.0.1](assets/licenses/jquery-btnswitch-LICENSE.txt) — MIT
   License.
+- [SweetAlert2 11.26.25](assets/licenses/sweetalert2-LICENSE.txt) — MIT License.
 - [highlight.js 9.9.0](assets/licenses/highlightjs-LICENSE.txt) — BSD 3-Clause
   License.
 
