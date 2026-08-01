@@ -13,10 +13,12 @@ function toPlain(value) {
     return JSON.parse(JSON.stringify(value));
 }
 
-function createHarness({ storedList, onSwalFire } = {}) {
+function createHarness({ storedList, onSwalFire, templateLoadError } = {}) {
     const document = {};
     const elements = new Map();
     const handlers = [];
+    const consoleErrors = [];
+    const swalCalls = [];
     const validationMessages = [];
     let context;
 
@@ -101,6 +103,10 @@ function createHarness({ storedList, onSwalFire } = {}) {
         return collection;
     };
     jquery.get = async function get() {
+        if (templateLoadError) {
+            throw templateLoadError;
+        }
+
         return "<form></form>";
     };
 
@@ -124,6 +130,8 @@ function createHarness({ storedList, onSwalFire } = {}) {
 
     const Swal = {
         async fire(options) {
+            swalCalls.push(options);
+
             if (options.didOpen) {
                 options.didOpen();
             }
@@ -150,13 +158,18 @@ function createHarness({ storedList, onSwalFire } = {}) {
         $: jquery,
         Swal,
         chrome,
-        console: { log() {} },
+        console: {
+            error(...args) {
+                consoleErrors.push(args);
+            },
+            log() {},
+        },
         document,
         window: { location: { reload() {} } },
     });
     vm.runInContext(optionSource, context, { filename: "option.js" });
 
-    return { context, elements, handlers, validationMessages };
+    return { consoleErrors, context, elements, handlers, swalCalls, validationMessages };
 }
 
 function findHandler(handlers, selector) {
@@ -183,6 +196,28 @@ test("the add button has a single delegated listener", () => {
     });
 
     assert.equal(addHandlers.length, 1);
+});
+
+test("normalizeTextList trims and deduplicates values in order", () => {
+    const { context } = createHarness();
+
+    assert.deepEqual(
+        Array.from(context.normalizeTextList(["  Alpha  ", "", "Alpha", "Beta", " Beta "])),
+        ["Alpha", "Beta"],
+    );
+});
+
+test("modal template load failures are handled at both entry points", async () => {
+    const harness = createHarness({
+        templateLoadError: new Error("missing template"),
+    });
+
+    assert.equal(await harness.context.modal("0"), false);
+    assert.equal(await runAddHandler(harness), false);
+    assert.equal(harness.consoleErrors.length, 2);
+    assert.equal(harness.swalCalls.length, 2);
+    assert.equal(harness.swalCalls[0].title, "Não foi possível abrir o formulário");
+    assert.equal(harness.swalCalls[1].title, "Não foi possível abrir o formulário");
 });
 
 test("text handlers reject blank values and store trimmed values", () => {

@@ -21,10 +21,17 @@ function escapeHtml(value) {
 }
 
 function normalizeTextList(list) {
+    var seen = new Set();
+
     return list.map(function (value) {
         return String(value).trim();
     }).filter(function (value) {
-        return value.length > 0;
+        if (value.length === 0 || seen.has(value)) {
+            return false;
+        }
+
+        seen.add(value);
+        return true;
     });
 }
 
@@ -88,6 +95,24 @@ function addTextValue(inputSelector, list, renderList) {
 //bring the html for the modal
 function loadHtmlJQ(path) {
     return $.get(path);
+}
+
+async function loadMonitoringFormHtml() {
+    try {
+        return await loadHtmlJQ(chrome.runtime.getURL("components/modal.html"));
+    } catch (error) {
+        console.error("Unable to load the monitoring form.", error);
+        await Swal.fire({
+            icon: "error",
+            title: "Não foi possível abrir o formulário",
+            text: "Recarregue a página e tente novamente.",
+            background: "#19191a",
+            color: "#e1e1e1",
+            confirmButtonText: "Fechar",
+            confirmButtonColor: "#E50091",
+        });
+        return null;
+    }
 }
 
 //renderize the Main list of cards
@@ -362,7 +387,9 @@ function modal(id = false) {
     var active = true;
 
     return (async () => {
-        var html = await loadHtmlJQ(chrome.runtime.getURL("components/modal.html"));
+        var html = await loadMonitoringFormHtml();
+        if (html === null) return false;
+
         var new_id = parseInt(id) + 1;
 
         return Swal.fire({
@@ -555,7 +582,8 @@ $(document).on("click", "#btnAdd", function () {
     TIME_LIST_TEMP = [];
 
     return (async () => {
-        var html = await loadHtmlJQ(chrome.runtime.getURL("components/modal.html"));
+        var html = await loadMonitoringFormHtml();
+        if (html === null) return false;
 
         return Swal.fire({
             width: '70rem',
