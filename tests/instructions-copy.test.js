@@ -1,9 +1,11 @@
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import test from "node:test";
+const assert = require("node:assert/strict");
+const { readFileSync } = require("node:fs");
+const path = require("node:path");
+const test = require("node:test");
 
-const optionHtml = await readFile(new URL("../option.html", import.meta.url), "utf8");
-const modalHtml = await readFile(new URL("../components/modal.html", import.meta.url), "utf8");
+const projectRoot = path.resolve(__dirname, "..");
+const optionHtml = readFileSync(path.join(projectRoot, "option.html"), "utf8");
+const modalHtml = readFileSync(path.join(projectRoot, "components", "modal.html"), "utf8");
 
 test("instructions clearly describe the configuration fields", () => {
     assert.match(optionHtml, /Como configurar o monitoramento\?/);
