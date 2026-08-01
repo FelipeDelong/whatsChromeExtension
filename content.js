@@ -177,7 +177,7 @@ async function sendScript(scriptText) {
     var line = lines[lineIndex];
 
     var time;
-    switch (randomIndex(3)) {
+    switch (randomIndex(4)) {
       case 1:
         time = 100;
         break;
@@ -419,7 +419,7 @@ async function checkMessage(messages) {
 
       if (!value) continue;
 
-      var contacts = (value.contact_list || []).map(c => String(c).toLowerCase()); //lower case values of comparation
+      var contacts = (value.contact_list || []).map(c => normalizeText(c)); //normalized participant names
       var keywords = (value.keyword_list || []).map(c => normalizeText(String(c))); //lower case values of comparation
       var date_list = value.date_list || [];
       var time_list = value.time_list || [];
@@ -434,7 +434,7 @@ async function checkMessage(messages) {
       var diffMin = Math.floor((today - message_time) / 60000); // Analyze messages from now through five hours ago.
 
       if (diffMin >= 0 && diffMin <= 300) {
-        if (contacts.includes(String(message.autor || "").toLowerCase()) || contacts.length == 0) { //checks autor
+        if (contacts.includes(normalizeText(message.autor)) || contacts.length == 0) { //checks autor
 
           if (checkDate(date_list, message) && checkTime(time_list, message)) { //checks date and time
 
@@ -745,6 +745,9 @@ async function checkUnreadMessage() {
 
     if (!message) continue;
 
+    var normalized_contact = normalizeText(message.contact);
+    if (!normalized_contact) continue;
+
     for (var key = 0; key < LIST_ACTIVE.length; key++) {
       var value = LIST_ACTIVE[key];
 
@@ -755,7 +758,7 @@ async function checkUnreadMessage() {
       var contacts = (value.contact_list || []).map(c => normalizeText(c)); //lower case values of comparation
       var keywords = (value.keyword_list || []).map(c => normalizeText(String(c))); //lower case values of comparation
 
-      if (normalized_group_name.includes(normalizeText(message.contact))) { //checks contact or group name
+      if (normalized_group_name.includes(normalized_contact)) { //checks contact or group name
 
         if (contacts.includes(normalizeText(message.autor)) || contacts.length == 0) { //checks autor
 

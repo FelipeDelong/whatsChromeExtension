@@ -164,6 +164,40 @@ test("DOM entry points return safely when WhatsApp has no active pane", async ()
   assert.equal(runtimeMessages.at(-1).data, "Nenhuma conversa Encontrada");
 });
 
+test("sendScript reaches every configured typing delay", async () => {
+  const { context, document } = createHarness();
+  const outcomes = [0, 1, 2, 3];
+  const bounds = [];
+  const delays = [];
+  const textarea = {
+    dispatchEvent() {},
+    focus() {}
+  };
+  const sendButton = {
+    click() {}
+  };
+  const main = {
+    querySelector(selector) {
+      if (selector === 'div[contenteditable="true"]') return textarea;
+      if (selector === 'button[aria-label="Enviar"]') return sendButton;
+      return null;
+    }
+  };
+
+  document.querySelector = () => main;
+  context.randomIndex = (bound) => {
+    bounds.push(bound);
+    return outcomes.shift();
+  };
+  context.wait = async (delay) => {
+    delays.push(delay);
+  };
+
+  assert.equal(await context.sendScript("one\ntwo\nthree\nfour"), true);
+  assert.deepEqual(bounds, [4, 4, 4, 4]);
+  assert.deepEqual(delays, [3000, 250, 100, 250, 1000, 250, 1500]);
+});
+
 test("quoteMessage ignores a preexisting menu and uses the menu opened by its trigger", async () => {
   const { context, document } = createHarness();
   let unrelatedClicked = false;
@@ -406,6 +440,27 @@ test("checkMessage responds once to the same normalized message", async () => {
   );
 });
 
+test("checkMessage normalizes participant filters consistently", async () => {
+  const { context } = createHarness();
+  const message = currentMessage("alerta", {
+    autor: "Jose da Silva",
+    id: "normalized-participant"
+  });
+  let deliveries = 0;
+
+  context.LIST_ACTIVE = [{
+    ...matchingRule(),
+    contact_list: ["  José\t  da Silva  "]
+  }];
+  context.foundMessage = async () => {
+    deliveries += 1;
+    return true;
+  };
+
+  assert.equal(await context.checkMessage([message]), true);
+  assert.equal(deliveries, 1);
+});
+
 test("checkMessage accepts only messages from zero through 300 minutes old", async () => {
   const { context, runtimeMessages } = createHarness();
   const fixedNow = new Date(2026, 7, 1, 12, 0, 0).getTime();
@@ -617,4 +672,23 @@ test("checkUnreadMessage searches with the original group name", async () => {
 
   assert.equal(await context.checkUnreadMessage(), true);
   assert.equal(searchedName, "José");
+});
+
+test("checkUnreadMessage skips entries without a contact", async () => {
+  const { context } = createHarness();
+  let searches = 0;
+
+  context.LIST_ACTIVE = [matchingRule()];
+  context.LIST_UNREAD_MESSAGE = [{
+    autor: "Contato",
+    contact: "   ",
+    message: "alerta"
+  }];
+  context.goToContact = async () => {
+    searches += 1;
+    return true;
+  };
+
+  assert.equal(Boolean(await context.checkUnreadMessage()), false);
+  assert.equal(searches, 0);
 });
