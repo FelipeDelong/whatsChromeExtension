@@ -12,7 +12,21 @@ const modalHtml = fs.readFileSync(
 
 test("the settings page uses HTML5 Standards Mode", () => {
     assert.match(optionHtml, /^<!DOCTYPE html>\s*<html\b[^>]*\blang=["']pt-BR["'][^>]*>/i);
-    assert.match(optionHtml, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
+    const viewport = optionHtml.match(
+        /<meta\b(?=[^>]*\bname\s*=\s*["']viewport["'])[^>]*>/i,
+    );
+    assert.ok(viewport);
+
+    const viewportContent = viewport[0].match(
+        /\bcontent\s*=\s*["']([^"']*)["']/i,
+    );
+    assert.ok(viewportContent);
+
+    const viewportDirectives = viewportContent[1]
+        .split(",")
+        .map((directive) => directive.trim().toLowerCase());
+    assert.ok(viewportDirectives.includes("width=device-width"));
+    assert.ok(viewportDirectives.includes("initial-scale=1"));
     assert.doesNotMatch(optionHtml, /<meta[^>]+http-equiv="X-UA-Compatible"/i);
 });
 
@@ -53,8 +67,15 @@ test("settings fields have accessible labels", () => {
 });
 
 test("settings actions use semantic buttons", () => {
-    assert.match(optionHtml, /<button id="btnAdd"[^>]*type="button">/);
-    assert.match(optionHtml, /<button id="btnSave"[^>]*type="button">/);
+    function buttonPattern(id) {
+        return new RegExp(
+            `<button\\b(?=[^>]*\\bid=["']${id}["'])(?=[^>]*\\btype=["']button["'])[^>]*>`,
+            "i",
+        );
+    }
+
+    assert.match(optionHtml, buttonPattern("btnAdd"));
+    assert.match(optionHtml, buttonPattern("btnSave"));
     assert.doesNotMatch(optionHtml, /<input[^>]+type="button"/i);
 
     [
@@ -64,7 +85,7 @@ test("settings actions use semantic buttons", () => {
         "btn_add_date",
         "btn_add_time",
     ].forEach((id) => {
-        assert.match(modalHtml, new RegExp(`<button[^>]+id="${id}"[^>]+type="button">`));
+        assert.match(modalHtml, buttonPattern(id));
     });
     assert.doesNotMatch(modalHtml, /<input[^>]+type="button"/i);
 });
