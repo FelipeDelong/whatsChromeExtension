@@ -2,7 +2,6 @@ var LIST_NAME = "list";
 var ACTIVE = "active";
 
 var ON = false;
-
 var LIST_ACTIVE = [];
 var LIST_ID = [];
 
@@ -10,14 +9,21 @@ var BURN = [];
 
 var LIST_UNREAD_MESSAGE = [];
 
+var PROCESSED_MESSAGE_ELEMENTS = new WeakSet();
+var IN_FLIGHT_MESSAGE_ELEMENTS = new WeakSet();
+
 //auxiliary functions
 function onTabClosing() {
   chrome.storage.local.set({ [ALREADY_ACTIVE_NAME]: [] });
 }
 
 function normalizeText(string) {
-  var text = String(string).toLowerCase().normalize("NFD").replace("  ", "");  // remove acentos.replace(/\s+/g, " ").trim();
-  return text
+  return String(string || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function fnv1aHash(str) {
@@ -35,20 +41,140 @@ function buildKey(meta) {
   return [meta.autor, meta.date, meta.time, meta.text].join("||");
 }
 
+function getMessageId(message) {
+  var id = String(message?.id || "").trim();
+  return id || null;
+}
+
+function getMessageReference(message) {
+  var element = message?.element;
+
+  if ((typeof element === "object" && element !== null) || typeof element === "function") {
+    return element;
+  }
+
+  if ((typeof message === "object" && message !== null) || typeof message === "function") {
+    return message;
+  }
+
+  return null;
+}
+
+function wasMessageProcessed(message) {
+  var reference = getMessageReference(message);
+  return reference !== null && PROCESSED_MESSAGE_ELEMENTS.has(reference);
+}
+
+function sendRuntimeRequest(message) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(message, (response) => {
+      var error = chrome.runtime.lastError;
+
+      if (error) {
+        reject(new Error(error.message || "Falha na comunicação com a extensão."));
+        return;
+      }
+
+      resolve(response);
+    });
+  });
+}
+
+async function reserveMessage(message) {
+  var id = getMessageId(message);
+  var reference = getMessageReference(message);
+
+  if (wasMessageProcessed(message)) return false;
+  if (reference !== null && IN_FLIGHT_MESSAGE_ELEMENTS.has(reference)) return false;
+
+  if (id === null) {
+    if (reference !== null) IN_FLIGHT_MESSAGE_ELEMENTS.add(reference);
+    return { kind: "local", reference };
+  }
+
+  var response;
+
+  try {
+    response = await sendRuntimeRequest({
+      type: "MONITOR_MESSAGE_CLAIM",
+      id
+    });
+  } catch (error) {
+    console.warn("Não foi possível reservar a mensagem.", error);
+    return false;
+  }
+
+  if (response?.ok !== true) return false;
+
+  if (response.claimed !== true || !response.token) {
+    if (response.status === "processed" && reference !== null) {
+      PROCESSED_MESSAGE_ELEMENTS.add(reference);
+    }
+    return false;
+  }
+
+  if (reference !== null) IN_FLIGHT_MESSAGE_ELEMENTS.add(reference);
+
+  return {
+    kind: "central",
+    id,
+    reference,
+    token: response.token
+  };
+}
+
+async function finishMessage(reservation, processed) {
+  var reference = reservation?.reference || null;
+  if (reference !== null) IN_FLIGHT_MESSAGE_ELEMENTS.delete(reference);
+
+  if (reservation?.kind === "local") {
+    if (processed && reference !== null) PROCESSED_MESSAGE_ELEMENTS.add(reference);
+    return processed;
+  }
+
+  if (reservation?.kind !== "central") return false;
+
+  var type = processed ? "MONITOR_MESSAGE_COMPLETE" : "MONITOR_MESSAGE_RELEASE";
+  var response;
+
+  try {
+    response = await sendRuntimeRequest({
+      type,
+      id: reservation.id,
+      token: reservation.token
+    });
+  } catch (error) {
+    console.warn("Não foi possível finalizar o estado da mensagem.", error);
+    return false;
+  }
+
+  if (processed) {
+    var completed = response?.ok === true && response.completed === true;
+    if (completed && reference !== null) PROCESSED_MESSAGE_ELEMENTS.add(reference);
+    return completed;
+  }
+
+  return response?.ok === true && response.released === true;
+}
+
 function randomIndex(x) {
   x = Number(x);
   return Math.floor(Math.random() * x);
 }
 
 async function sendScript(scriptText) {
-  var lines = scriptText.split(/[\n\t]+/).map(line => line.trim()).filter(line => line);
+  var lines = String(scriptText || "").split(/[\n\t]+/).map(line => line.trim()).filter(line => line);
 
-  main = document.querySelector(`div[id="main"]`);
-  textarea = main.querySelector(`div[contenteditable="true"]`);
+  if (lines.length === 0) return false;
 
-  if (!textarea) throw new Error("Não há uma conversa aberta")
+  var main = document.querySelector(`div[id="main"]`);
+  if (!main) return false;
 
-  for (var line of lines) {
+  var textarea = main.querySelector(`div[contenteditable="true"]`);
+  if (!textarea) return false;
+
+  for (var lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    var line = lines[lineIndex];
 
     var time;
     switch (randomIndex(3)) {
@@ -69,14 +195,17 @@ async function sendScript(scriptText) {
     document.execCommand('insertText', false, line);
     textarea.dispatchEvent(new Event('change', { bubbles: true }));
 
-    setTimeout(() => {
-      (main.querySelector(`button[aria-label="Enviar"]`)).click();
-    }, time);
+    await wait(time);
 
-    if (lines.indexOf(line) !== lines.length - 1) await new Promise(resolve => setTimeout(resolve, 250));
+    var sendButton = main.querySelector(`button[aria-label="Enviar"]`);
+    if (!sendButton) return false;
+
+    sendButton.click();
+
+    if (lineIndex !== lines.length - 1) await wait(250);
   }
 
-  return lines.length;
+  return true;
 }
 
 function checkDate(date_list, message) {
@@ -103,31 +232,132 @@ function checkDate(date_list, message) {
 }
 
 function checkTime(time_list, message) {
-  var result = false;
+  if (!Array.isArray(time_list) || time_list.length === 0) return true;
 
-  if (time_list || !time_list > 0) {
-    result = true;
-  } else {
-    var time_message = new Date("2026-01-01T" + message.time + ":00"); // "HH:MM"
+  function toMinutes(value) {
+    var match = /^(\d{2}):(\d{2})$/.exec(String(value || ""));
+    if (!match) return null;
 
-    $.each(time_list, function (key, value) {
-      var time1 = new Date("2026-01-01T" + value.time1 + ":00");
-      var time2 = new Date("2026-01-01T" + value.time2 + ":00");
+    var hours = Number(match[1]);
+    var minutes = Number(match[2]);
+    if (hours > 23 || minutes > 59) return null;
 
-      if (time1 <= time_message && time_message <= time2) {
-        result = true;
-      }
-    });
+    return (hours * 60) + minutes;
   }
 
-  return result;
+  var messageMinutes = toMinutes(message?.time);
+  if (messageMinutes === null) return false;
+
+  return time_list.some(function (value) {
+    var startMinutes = toMinutes(value?.time1);
+    var endMinutes = toMinutes(value?.time2);
+
+    if (startMinutes === null || endMinutes === null) return false;
+    if (startMinutes === endMinutes) return false;
+
+    if (startMinutes < endMinutes) {
+      return startMinutes <= messageMinutes && messageMinutes <= endMinutes;
+    }
+
+    return messageMinutes >= startMinutes || messageMinutes <= endMinutes;
+  });
 }
 
 function wait(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+function findMessageMenuTrigger(element) {
+  var scopes = [];
+
+  function addScope(scope) {
+    if (scope && !scopes.includes(scope)) scopes.push(scope);
+  }
+
+  addScope(element);
+
+  if (typeof element?.closest === "function") {
+    addScope(element.closest(".message-in"));
+    addScope(element.closest("[data-id]"));
+  }
+
+  for (var scope of scopes) {
+    if (typeof scope.querySelectorAll !== "function") continue;
+
+    var triggers = Array.from(scope.querySelectorAll('div[aria-label="Menu de contexto"]'));
+    if (triggers.length === 1) return triggers[0];
+    if (triggers.length > 1) return null;
+  }
+
+  return null;
+}
+
+function isOpenMenu(menu) {
+  return !!menu
+    && menu.hidden !== true
+    && menu.getAttribute?.("aria-hidden") !== "true";
+}
+
+function wasOpenedByClick(menu, menusBeforeClick) {
+  return isOpenMenu(menu)
+    && (!menusBeforeClick.has(menu) || menusBeforeClick.get(menu) === false);
+}
+
+function resolveOpenedMenu(trigger, menusBeforeClick, menus) {
+  var openedMenus = menus.filter(function (menu) {
+    return wasOpenedByClick(menu, menusBeforeClick);
+  });
+
+  var relationshipIds = ["aria-controls", "aria-owns"].flatMap(function (attribute) {
+    return String(trigger.getAttribute?.(attribute) || "").split(/\s+/).filter(Boolean);
+  });
+
+  if (relationshipIds.length > 0) {
+    var controlledMenus = [];
+
+    relationshipIds.forEach(function (id) {
+      var controlled = typeof document.getElementById === "function"
+        ? document.getElementById(id)
+        : null;
+
+      if (!controlled) return;
+      if (menus.includes(controlled)) controlledMenus.push(controlled);
+
+      if (typeof controlled.querySelectorAll === "function") {
+        controlledMenus.push(...Array.from(controlled.querySelectorAll('[role="menu"]')));
+      }
+    });
+
+    controlledMenus = [...new Set(controlledMenus)].filter(function (menu) {
+      return openedMenus.includes(menu);
+    });
+
+    return controlledMenus.length === 1 ? controlledMenus[0] : null;
+  }
+
+  var triggerId = String(trigger.id || trigger.getAttribute?.("id") || "");
+
+  if (triggerId) {
+    var labelledMenus = menus.filter(function (menu) {
+      var labelledBy = String(menu.getAttribute?.("aria-labelledby") || "").split(/\s+/);
+      return labelledBy.includes(triggerId);
+    });
+
+    if (labelledMenus.length > 0) {
+      labelledMenus = labelledMenus.filter(function (menu) {
+        return openedMenus.includes(menu);
+      });
+
+      return labelledMenus.length === 1 ? labelledMenus[0] : null;
+    }
+  }
+
+  return openedMenus.length === 1 ? openedMenus[0] : null;
+}
+
 async function quoteMessage(el) {
+  if (!el) return false;
+
   el.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true, cancelable: true, view: window }));
   el.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, cancelable: true, view: window }));
 
@@ -135,22 +365,30 @@ async function quoteMessage(el) {
 
   var main = document.querySelector('div[id="main"]');
   if (!main) {
-    throw new Error("Não achei #main");
+    return false;
   }
 
-  var dropDown_menu = main.querySelector('div[aria-label="Menu de contexto"]');
+  var dropDown_menu = findMessageMenuTrigger(el);
   if (!dropDown_menu) {
-    throw new Error("Não achei Menu de contexto");
+    return false;
   };
 
+  var menusBeforeClick = new Map(Array.from(document.querySelectorAll('[role="menu"]')).map(function (menu) {
+    return [menu, isOpenMenu(menu)];
+  }));
   dropDown_menu.click();
 
   await wait(500);
 
-  var quoted_btn = Array.from(document.querySelectorAll("span")).find(el => (el.textContent || "").trim() === "Responder");
+  var menus = Array.from(document.querySelectorAll('[role="menu"]'));
+  var openedMenu = resolveOpenedMenu(dropDown_menu, menusBeforeClick, menus);
+
+  if (!openedMenu) return false;
+
+  var quoted_btn = Array.from(openedMenu.querySelectorAll("span")).find(el => (el.textContent || "").trim() === "Responder");
 
   if (!quoted_btn) {
-    throw new Error('Não achei o botão "Responder"');
+    return false;
   };
 
   quoted_btn.click();
@@ -167,35 +405,64 @@ async function quoteMessage(el) {
 
 //checks if the message is in accord the conditions of list
 async function checkMessage(messages) {
+  if (!Array.isArray(messages)) return false;
+
+  var sentResponse = false;
+
   for (var key2 = 0; key2 < messages.length; key2++) {
+    var message = messages[key2];
+
+    if (!message || wasMessageProcessed(message)) continue;
+
     for (var key = 0; key < LIST_ACTIVE.length; key++) {
       var value = LIST_ACTIVE[key];
 
-      var message = messages[key2];
+      if (!value) continue;
 
       var contacts = (value.contact_list || []).map(c => String(c).toLowerCase()); //lower case values of comparation
       var keywords = (value.keyword_list || []).map(c => normalizeText(String(c))); //lower case values of comparation
       var date_list = value.date_list || [];
       var time_list = value.time_list || [];
 
+      if (!message.date || !message.time) continue;
+
       var today = new Date();
       var message_time = new Date(message.date + "T" + message.time + ":00");
 
-      var diffMin = Math.floor((today - message_time) / 60000); //analise messages with maximum of 1 minute difference from now
+      if (Number.isNaN(message_time.getTime())) continue;
 
-      if (diffMin <= 300) {
-        if (contacts.includes((message.autor).toLowerCase()) || contacts.length == 0) { //checks autor
+      var diffMin = Math.floor((today - message_time) / 60000); // Analyze messages from now through five hours ago.
+
+      if (diffMin >= 0 && diffMin <= 300) {
+        if (contacts.includes(String(message.autor || "").toLowerCase()) || contacts.length == 0) { //checks autor
 
           if (checkDate(date_list, message) && checkTime(time_list, message)) { //checks date and time
 
-            var normalize_message = message.text.toLowerCase();
+            var normalize_message = normalizeText(message.text);
 
             var list_words = normalize_message.split(" "); //try to find match with words
 
-            if (list_words.some(w => keywords.includes(w))) { //checks message
-              await foundMessage(key, message.element);
-            } else if (normalize_message.length > 3 && keywords.some(w => normalize_message.includes(w))) { //try to find match phrase
-              await foundMessage(key, message.element);
+            var matchesKeyword = list_words.some(w => keywords.includes(w))
+              || (normalize_message.length > 3 && keywords.some(w => normalize_message.includes(w)));
+
+            if (matchesKeyword) {
+              var reservation = await reserveMessage(message);
+              if (!reservation) break;
+
+              var sent = false;
+
+              try {
+                sent = await foundMessage(key, message.element);
+              } catch (error) {
+                console.warn("Não foi possível enviar a resposta.", error);
+              }
+
+              var finalized = await finishMessage(reservation, sent);
+
+              if (sent) {
+                if (finalized) sentResponse = true;
+                break;
+              }
             }
           } else {
             console.log('data ou horario invalido');
@@ -205,19 +472,23 @@ async function checkMessage(messages) {
     }
   }
 
+  return sentResponse;
 }
 
 //call the function that quote the message thats match with values of list, then send script of the list 
 async function foundMessage(index, element) {
   var list = LIST_ACTIVE[index];
-  if (!list || !list.response_list || !list.response_list.length) return;
+  if (!list || !list.response_list || !list.response_list.length) return false;
+
+  var response = list.response_list[randomIndex(list.response_list.length)];
 
   try {
     await quoteMessage(element);
-    await sendScript(list.response_list[randomIndex(list.response_list.length)]);
   } catch (e) {
-    await sendScript(list.response_list[randomIndex(list.response_list.length)]);
+    console.warn("Não foi possível citar a mensagem; enviando sem citação.", e);
   }
+
+  return sendScript(response);
 }
 
 //remove quote mention of a message
@@ -248,6 +519,16 @@ function messageData(pre) {
   return { autor: autor, date: date, time: time };
 }
 
+function getMessageElementId(element) {
+  if (!element || typeof element.closest !== "function") return null;
+
+  var container = element.closest("[data-id]");
+  if (!container || typeof container.getAttribute !== "function") return null;
+
+  var id = String(container.getAttribute("data-id") || "").trim();
+  return id || null;
+}
+
 function sendMessagePopup(message) {
   chrome.runtime.sendMessage({
     type: "MESSAGE",
@@ -262,12 +543,13 @@ function getMain() {
 
   if (!main) {
     sendMessagePopup("Nenhuma conversa Encontrada");
+    return false;
   }
 
   var components = main.querySelectorAll(".message-in div[data-pre-plain-text]");
-  if (!components) {
+  if (!components || components.length === 0) {
     sendMessagePopup("Nenhuma Conversa Encontrada");
-    return false;
+    return [];
   } else {
     var arr = Array.from(components);
 
@@ -280,6 +562,7 @@ function getMain() {
       var meta = messageData(el.getAttribute("data-pre-plain-text"));
       return {
         element: element,
+        id: getMessageElementId(element),
         autor: meta.autor,
         text: ((el.innerText || "").trim()).replace(/\n/g, ' '),
         date: meta.date,
@@ -378,10 +661,7 @@ function focusWhatsTab() {
 }
 
 function sanitazeString(string) {
-  var result = string.replace("\n", " ");
-  result = String(result).toLowerCase().normalize("NFD").replace("  ", "");  // remove acentos.replace(/\s+/g, " ").trim();
-
-  return result;
+  return normalizeText(string);
 }
 
 $(document).ready(function () {
@@ -433,10 +713,12 @@ function cleanSearchContact() {
 }
 
 async function goToContact(group_name) {
-  await focusWhatsTab();
+  if (!group_name || !await focusWhatsTab()) return false;
 
   var side = document.querySelector('div[id="side"]');
   var textarea = side?.querySelector('div[data-lexical-editor="true"]');
+
+  if (!textarea) return false;
 
   textarea.focus();
 
@@ -456,21 +738,28 @@ async function goToContact(group_name) {
 
 async function checkUnreadMessage() {
 
+  if (!Array.isArray(LIST_UNREAD_MESSAGE)) return false;
+
   for (var key1 = 0; key1 < LIST_UNREAD_MESSAGE.length; key1++) {
     var message = LIST_UNREAD_MESSAGE[key1];
+
+    if (!message) continue;
 
     for (var key = 0; key < LIST_ACTIVE.length; key++) {
       var value = LIST_ACTIVE[key];
 
-      var group_name = (value.group_name.toLowerCase()); //lower case values of comparation
-      var contacts = (value.contact_list || []).map(c => String(c).toLowerCase()); //lower case values of comparation
+      if (!value || !value.group_name) continue;
+
+      var group_name = String(value.group_name); //preserve original name for WhatsApp search
+      var normalized_group_name = normalizeText(group_name);
+      var contacts = (value.contact_list || []).map(c => normalizeText(c)); //lower case values of comparation
       var keywords = (value.keyword_list || []).map(c => normalizeText(String(c))); //lower case values of comparation
 
-      if (group_name.includes((message.contact).toLowerCase())) { //checks contact or group name
+      if (normalized_group_name.includes(normalizeText(message.contact))) { //checks contact or group name
 
-        if (contacts.includes((message.autor).toLowerCase()) || contacts.length == 0) { //checks autor
+        if (contacts.includes(normalizeText(message.autor)) || contacts.length == 0) { //checks autor
 
-          var normalize_message = message.message;
+          var normalize_message = normalizeText(message.message);
 
           var list_words = normalize_message.split(" "); //try to find match with words
 
