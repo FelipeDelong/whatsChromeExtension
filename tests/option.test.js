@@ -299,6 +299,35 @@ test("cancelling an edit leaves the stored record unchanged", async () => {
     assert.deepEqual(storedList, original);
 });
 
+test("legacy records with missing lists render and open for editing", async () => {
+    const storedList = [{
+        active: false,
+        group_name: "Equipe legada",
+    }];
+    const { context, elements } = createHarness({ storedList });
+
+    assert.match(elements.get("#list").htmlContent, /Equipe legada/);
+    assert.equal(context.MAIN_LIST[0].active, false);
+    [
+        "contact_list",
+        "keyword_list",
+        "response_list",
+        "date_list",
+        "time_list",
+    ].forEach(function (listName) {
+        assert.deepEqual(Array.from(context.MAIN_LIST[0][listName]), []);
+    });
+
+    await context.modal("0");
+
+    assert.deepEqual(Array.from(context.CONTACT_LIST_TEMP), []);
+    assert.deepEqual(Array.from(context.KEYWORD_LIST_TEMP), []);
+    assert.deepEqual(Array.from(context.RESPONSE_LIST_TEMP), []);
+    assert.deepEqual(Array.from(context.DATE_LIST_TEMP), []);
+    assert.deepEqual(Array.from(context.TIME_LIST_TEMP), []);
+    assert.equal(context.MAIN_LIST[0].active, false);
+});
+
 test("editing captures the group name inside preConfirm", async () => {
     const storedList = [{
         contact_list: [],

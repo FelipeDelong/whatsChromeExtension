@@ -35,6 +35,19 @@ function normalizeTextList(list) {
     });
 }
 
+function normalizeMonitoringRecord(record) {
+    var normalized = record && typeof record === "object" ? record : {};
+
+    return {
+        ...normalized,
+        contact_list: Array.isArray(normalized.contact_list) ? normalized.contact_list : [],
+        keyword_list: Array.isArray(normalized.keyword_list) ? normalized.keyword_list : [],
+        response_list: Array.isArray(normalized.response_list) ? normalized.response_list : [],
+        date_list: Array.isArray(normalized.date_list) ? normalized.date_list : [],
+        time_list: Array.isArray(normalized.time_list) ? normalized.time_list : [],
+    };
+}
+
 function showFormError(message, inputSelector) {
     Swal.showValidationMessage(message);
     $(inputSelector).trigger("focus");
@@ -119,7 +132,7 @@ async function loadMonitoringFormHtml() {
 function renderizeMainList(list = MAIN_LIST) {
     var html = ``;
 
-    MAIN_LIST = Array.isArray(list) ? list : [];
+    MAIN_LIST = (Array.isArray(list) ? list : []).map(normalizeMonitoringRecord);
     console.log(MAIN_LIST);
 
     $.each(MAIN_LIST, function (key, value) {
@@ -408,18 +421,20 @@ function modal(id = false) {
             html: html,
             didOpen: () => {
                 if (id !== false) {
+                    var record = normalizeMonitoringRecord(MAIN_LIST[id]);
+                    MAIN_LIST[id] = record;
                     $("#swal2-title").text('Editar Registro ' + new_id);
-                    $("#group").val(MAIN_LIST[id]["group_name"]);
-                    CONTACT_LIST_TEMP = MAIN_LIST[id]["contact_list"].slice();
-                    KEYWORD_LIST_TEMP = MAIN_LIST[id]["keyword_list"].slice();
-                    RESPONSE_LIST_TEMP = MAIN_LIST[id]["response_list"].slice();
-                    DATE_LIST_TEMP = MAIN_LIST[id]["date_list"].map(function (date) {
+                    $("#group").val(record.group_name);
+                    CONTACT_LIST_TEMP = record.contact_list.slice();
+                    KEYWORD_LIST_TEMP = record.keyword_list.slice();
+                    RESPONSE_LIST_TEMP = record.response_list.slice();
+                    DATE_LIST_TEMP = record.date_list.map(function (date) {
                         return { ...date };
                     });
-                    TIME_LIST_TEMP = MAIN_LIST[id]["time_list"].map(function (time) {
+                    TIME_LIST_TEMP = record.time_list.map(function (time) {
                         return { ...time };
                     });
-                    active = MAIN_LIST[id]["active"];
+                    active = record.active;
 
                     renderizeList_contact();
                     renderizeList_keyWord();
