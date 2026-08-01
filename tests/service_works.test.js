@@ -149,6 +149,7 @@ test("two tabs cannot claim the same message concurrently", async () => {
   assert.equal(denied[0].status, "claimed");
   assert.equal(worker.storage.processed_message_ids.length, 1);
   assert.equal(worker.storage.processed_message_ids[0].status, "claimed");
+  assert.equal(worker.storage.processed_message_ids[0].token, claimed[0].token);
 
   const completed = await worker.dispatch({
     type: "MONITOR_MESSAGE_COMPLETE",
@@ -159,6 +160,10 @@ test("two tabs cannot claim the same message concurrently", async () => {
   assert.equal(completed.ok, true);
   assert.equal(completed.completed, true);
   assert.equal(worker.storage.processed_message_ids[0].status, "processed");
+  assert.equal(
+    Object.prototype.hasOwnProperty.call(worker.storage.processed_message_ids[0], "token"),
+    false
+  );
 });
 
 test("a restarted worker preserves more than 500 processed ids and an active claim", async () => {
@@ -183,6 +188,10 @@ test("a restarted worker preserves more than 500 processed ids and an active cla
   });
   assert.equal(claim.claimed, true);
   assert.equal(storage.processed_message_ids.length, 502);
+  assert.equal(
+    storage.processed_message_ids.find((entry) => entry.id === "claimed-before-restart").token,
+    claim.token
+  );
 
   const restartedWorker = createWorkerHarness(storage);
   const completed = await restartedWorker.dispatch({
@@ -196,6 +205,13 @@ test("a restarted worker preserves more than 500 processed ids and an active cla
   assert.equal(
     storage.processed_message_ids.find((entry) => entry.id === "claimed-before-restart").status,
     "processed"
+  );
+  assert.equal(
+    Object.prototype.hasOwnProperty.call(
+      storage.processed_message_ids.find((entry) => entry.id === "claimed-before-restart"),
+      "token"
+    ),
+    false
   );
 
   const stillDenied = await restartedWorker.dispatch({

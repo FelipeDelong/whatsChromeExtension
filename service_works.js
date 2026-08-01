@@ -87,12 +87,17 @@ function normalizeMessageState(entries, now) {
 
 function serializeMessageState(state) {
   return Array.from(state.values(), function (entry) {
-    return {
+    var serializedEntry = {
       id: entry.id,
       status: entry.status,
-      token: entry.token,
       updatedAt: entry.updatedAt
     };
+
+    if (entry.status === "claimed") {
+      serializedEntry.token = entry.token;
+    }
+
+    return serializedEntry;
   });
 }
 
