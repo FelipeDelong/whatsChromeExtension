@@ -64,3 +64,16 @@
     cursor: pointer;
     font-weight: bold;
 }
+
+.button-offset {
+    margin-left: -1rem;
+}
+
+.list-row-offset {
+    margin-left: .75rem;
+}
+
+.range-separator {
+    margin-right: -1rem;
+    margin-left: -1rem;
+}

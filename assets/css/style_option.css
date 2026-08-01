@@ -227,3 +227,13 @@ body {
 .btnDelete:hover {
     background-color: #E50091;
 }
+
+.instructions {
+    margin: 5rem 5rem 0;
+}
+
+.group-list-panel {
+    margin: 2rem 5rem 5rem;
+    background-color: #292929;
+    border-radius: 20px;
+}
