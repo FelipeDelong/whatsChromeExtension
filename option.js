@@ -6,6 +6,85 @@ var RESPONSE_LIST_TEMP = [];
 var DATE_LIST_TEMP = [];
 var TIME_LIST_TEMP = [];
 
+function escapeHtml(value) {
+    var characters = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+    };
+
+    return String(value).replace(/[&<>"']/g, function (character) {
+        return characters[character];
+    });
+}
+
+function normalizeTextList(list) {
+    return list.map(function (value) {
+        return String(value).trim();
+    }).filter(function (value) {
+        return value.length > 0;
+    });
+}
+
+function showFormError(message, inputSelector) {
+    Swal.showValidationMessage(message);
+    $(inputSelector).trigger("focus");
+    return false;
+}
+
+function validateMonitoringForm(recordId = null) {
+    var group = $("#group").val().trim();
+    CONTACT_LIST_TEMP = normalizeTextList(CONTACT_LIST_TEMP);
+    KEYWORD_LIST_TEMP = normalizeTextList(KEYWORD_LIST_TEMP);
+    RESPONSE_LIST_TEMP = normalizeTextList(RESPONSE_LIST_TEMP);
+
+    if (!group) {
+        return showFormError("Informe o grupo ou contato do monitoramento", "#group");
+    }
+
+    var duplicateGroup = MAIN_LIST.some(function (item, index) {
+        return index !== recordId && String(item.group_name).trim() === group;
+    });
+
+    if (duplicateGroup) {
+        return showFormError("Já existe um monitoramento para esse grupo ou contato", "#group");
+    }
+
+    if (KEYWORD_LIST_TEMP.length === 0) {
+        return showFormError("Insira ao menos uma palavra-chave", "#input_keyWord");
+    }
+
+    if (RESPONSE_LIST_TEMP.length === 0) {
+        return showFormError("Insira ao menos uma resposta", "#input_response");
+    }
+
+    return { group };
+}
+
+function addTextValue(inputSelector, list, renderList) {
+    var value = $(inputSelector).val().trim();
+
+    if (!value) {
+        showFormError("Digite um texto para incluir na lista", inputSelector);
+        return;
+    }
+
+    var duplicateValue = list.some(function (item) {
+        return String(item).trim() === value;
+    });
+
+    if (duplicateValue) {
+        showFormError("Esse texto já foi incluído", inputSelector);
+        return;
+    }
+
+    $(inputSelector).val("");
+    list.push(value);
+    renderList();
+}
+
 //bring the html for the modal
 function loadHtmlJQ(path) {
     return $.get(path);
@@ -15,7 +94,7 @@ function loadHtmlJQ(path) {
 function renderizeMainList(list = MAIN_LIST) {
     var html = ``;
 
-    MAIN_LIST = list;
+    MAIN_LIST = Array.isArray(list) ? list : [];
     console.log(MAIN_LIST);
 
     $.each(MAIN_LIST, function (key, value) {
@@ -38,7 +117,7 @@ function renderizeMainList(list = MAIN_LIST) {
         var contact_list = ``;
         if (value.contact_list.length > 0) {
             $.each(value.contact_list, function (key, value) {
-                contact_list += ` <div class="col-12 text2 ` + active_border + `"> ` + value + ` </div>`;
+                contact_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(value) + ` </div>`;
             });
         } else {
                 contact_list += ` <div class="col-12 text2 offBorder"> Todos os contatos </div>`;
@@ -47,12 +126,12 @@ function renderizeMainList(list = MAIN_LIST) {
 
         var keyword_list = ``;
         $.each(value.keyword_list, function (key, value) {
-            keyword_list += ` <div class="col-12 text2 ` + active_border + `"> ` + value + ` </div>`;
+            keyword_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(value) + ` </div>`;
         });
 
         var response_list = ``;
         $.each(value.response_list, function (key, value) {
-            response_list += ` <div class="col-12 text2 ` + active_border + `"> ` + value + ` </div>`;
+            response_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(value) + ` </div>`;
         });
 
         var date_list = ``;
@@ -62,7 +141,7 @@ function renderizeMainList(list = MAIN_LIST) {
                 var date1 = temp1[2] + "/" + temp1[1] + "/" + temp1[0];
                 var temp2 = value.date2.split('-');
                 var date2 = temp2[2] + "/" + temp2[1] + "/" + temp2[0];
-                date_list += ` <div class="col-12 text2 ` + active_border + `"> ` + date1 + ` - ` + date2 + ` </div>`;
+                date_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(date1) + ` - ` + escapeHtml(date2) + ` </div>`;
             });
         } else {
             date_list += ` <div class="col-12 text2 offBorder"> Todos as datas </div>`
@@ -71,7 +150,7 @@ function renderizeMainList(list = MAIN_LIST) {
         var time_list = ``;
         if (value.time_list.length > 0) {
             $.each(value.time_list, function (key, value) {
-                time_list += ` <div class="col-12 text2 ` + active_border + `"> ` + value.time1 + ` - ` + value.time2 + `</div>`;
+                time_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(value.time1) + ` - ` + escapeHtml(value.time2) + `</div>`;
             });
         } else {
             time_list += ` <div class="col-12 text2 offBorder"> Todos os horários </div>`;
@@ -89,7 +168,7 @@ function renderizeMainList(list = MAIN_LIST) {
                                 <div class="col-2 d-flex align-items-center subtitle1">Grupo/Contato:</div>
                                 <div class="col-8">
                                     <div class="col-12 text1" style="text-align: center;">
-                                        ` + value.group_name + `
+                                        ` + escapeHtml(value.group_name) + `
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +243,7 @@ function renderizeList_contact() {
     $.each(CONTACT_LIST_TEMP, function (key, value) {
         html += `   <div class="col-12 d-flex justify-content-center">
                         <div class="col-10">
-                            ` + value + `
+                            ` + escapeHtml(value) + `
                         </div>
                         <div class="col-2 btnExclude" id="btnExcludeContact" data-id="` + key + `">
                             x
@@ -181,7 +260,7 @@ function renderizeList_keyWord() {
     $.each(KEYWORD_LIST_TEMP, function (key, value) {
         html += `   <div class="col-12 d-flex justify-content-center">
                         <div class="col-10">
-                            ` + value + `
+                            ` + escapeHtml(value) + `
                         </div>
                         <div class="col-2 btnExclude" id="btnExcludeKeyWord" data-id="` + key + `">
                             x
@@ -198,7 +277,7 @@ function renderizeList_response() {
     $.each(RESPONSE_LIST_TEMP, function (key, value) {
         html += `   <div class="col-12 d-flex justify-content-center">
                         <div class="col-10">
-                            ` + value + `
+                            ` + escapeHtml(value) + `
                         </div>
                         <div class="col-2 btnExclude" id="btnExcludeResponse" data-id="` + key + `">
                             x
@@ -220,7 +299,7 @@ function renderizeList_date() {
 
         html += `   <div class="col-12 d-flex justify-content-center">
                         <div class="col-10">
-                            ` + date1 + ` - ` + date2 + `
+                            ` + escapeHtml(date1) + ` - ` + escapeHtml(date2) + `
                         </div>
                         <div class="col-2 btnExclude" id="btnExcludeDate" data-id="` + key + `">
                             x
@@ -237,7 +316,7 @@ function renderizeList_time() {
     $.each(TIME_LIST_TEMP, function (key, value) {
         html += `   <div class="col-12 d-flex justify-content-center">
                         <div class="col-10">
-                            ` + value.time1 + ` - ` + value.time2 + `
+                            ` + escapeHtml(value.time1) + ` - ` + escapeHtml(value.time2) + `
                         </div>
                         <div class="col-2 btnExclude" id="btnExcludeTime" data-id="` + key + `">
                             x
@@ -282,11 +361,11 @@ function modal(id = false) {
 
     var active = true;
 
-    (async () => {
+    return (async () => {
         var html = await loadHtmlJQ(chrome.runtime.getURL("components/modal.html"));
         var new_id = parseInt(id) + 1;
 
-        Swal.fire({
+        return Swal.fire({
             width: '70rem',
             title: "Novo Grupo",
             background: "#19191a",
@@ -301,14 +380,18 @@ function modal(id = false) {
             backdrop: "rgba(0,0,0,0.55)",
             html: html,
             didOpen: () => {
-                if (id) {
+                if (id !== false) {
                     $("#swal2-title").text('Editar Registro ' + new_id);
                     $("#group").val(MAIN_LIST[id]["group_name"]);
-                    CONTACT_LIST_TEMP = MAIN_LIST[id]["contact_list"];
-                    KEYWORD_LIST_TEMP = MAIN_LIST[id]["keyword_list"];
-                    RESPONSE_LIST_TEMP = MAIN_LIST[id]["response_list"];
-                    DATE_LIST_TEMP = MAIN_LIST[id]["date_list"];
-                    TIME_LIST_TEMP = MAIN_LIST[id]["time_list"];
+                    CONTACT_LIST_TEMP = MAIN_LIST[id]["contact_list"].slice();
+                    KEYWORD_LIST_TEMP = MAIN_LIST[id]["keyword_list"].slice();
+                    RESPONSE_LIST_TEMP = MAIN_LIST[id]["response_list"].slice();
+                    DATE_LIST_TEMP = MAIN_LIST[id]["date_list"].map(function (date) {
+                        return { ...date };
+                    });
+                    TIME_LIST_TEMP = MAIN_LIST[id]["time_list"].map(function (time) {
+                        return { ...time };
+                    });
                     active = MAIN_LIST[id]["active"];
 
                     renderizeList_contact();
@@ -319,13 +402,11 @@ function modal(id = false) {
                 }
             },
             preConfirm: () => {
-                //msg de erro caso o campo esteja vazio
-
-                return { group };
+                return validateMonitoringForm(Number(id));
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                var group = $("#group").val();
+                var group = result.value.group;
 
                 var data = {
                     "group_name": group,
@@ -337,7 +418,7 @@ function modal(id = false) {
                     "time_list": TIME_LIST_TEMP,
                 };
 
-                if (id) {
+                if (id !== false) {
                     MAIN_LIST[id] = data;
                 } else {
                     MAIN_LIST.push(data);
@@ -361,55 +442,21 @@ $(document).ready(function () {
 
 // ------------ functions for the Modal ----------------
 
-$(document).on("click", "#btnAdd", function () {
-    modal();
-});
-
 $(document).on("click", "#btnEdit", function () {
     var id = $(this).attr('data-id');
     modal(id);
 });
 
 $(document).on("click", "#btn_add_contact", function () {
-    var value = $("#input_contact").val();
-
-    if (!value) {
-        hiddenText("#hidden_contact", "Digite um texto para incluir na lista");
-    } else if (CONTACT_LIST_TEMP.includes(value)) {
-        hiddenText("#hidden_contact", "Esse texto já foi incluido");
-    } else {
-        $("#input_contact").val("");
-        CONTACT_LIST_TEMP.push(value);
-        renderizeList_contact();
-    }
+    addTextValue("#input_contact", CONTACT_LIST_TEMP, renderizeList_contact);
 });
 
 $(document).on("click", "#btn_add_keyWord", function () {
-    var value = $("#input_keyWord").val();
-
-    if (!value) {
-        hiddenText("#hidden_keyWord", "Digite um texto para incluir na lista");
-    } else if (KEYWORD_LIST_TEMP.includes(value)) {
-        hiddenText("#hidden_keyWord", "Esse texto já foi incluido");
-    } else {
-        $("#input_keyWord").val("");
-        KEYWORD_LIST_TEMP.push(value);
-        renderizeList_keyWord();
-    }
+    addTextValue("#input_keyWord", KEYWORD_LIST_TEMP, renderizeList_keyWord);
 });
 
 $(document).on("click", "#btn_add_response", function () {
-    var value = $("#input_response").val();
-
-    if (!value) {
-        hiddenText("#hidden_response", "Digite um texto para incluir na lista");
-    } else if (RESPONSE_LIST_TEMP.includes(value)) {
-        hiddenText("#hidden_response", "Esse texto já foi incluido");
-    } else {
-        $("#input_response").val("");
-        RESPONSE_LIST_TEMP.push(value);
-        renderizeList_response();
-    }
+    addTextValue("#input_response", RESPONSE_LIST_TEMP, renderizeList_response);
 });
 
 $(document).on("click", "#btn_add_date", function () {
@@ -507,10 +554,10 @@ $(document).on("click", "#btnAdd", function () {
     DATE_LIST_TEMP = [];
     TIME_LIST_TEMP = [];
 
-    (async () => {
+    return (async () => {
         var html = await loadHtmlJQ(chrome.runtime.getURL("components/modal.html"));
 
-        Swal.fire({
+        return Swal.fire({
             width: '70rem',
             title: "Novo Grupo",
             background: "#19191a",
@@ -525,43 +572,11 @@ $(document).on("click", "#btnAdd", function () {
             backdrop: "rgba(0,0,0,0.55)",
             html: html,
             preConfirm: () => {
-                var group = $("#group").val();
-
-                if (!group) {
-                    hiddenText("#hidden_group", "Digite o nome do grupo");
-                    $("#group").trigger("focus");
-                    return false;
-                }
-
-                if ((MAIN_LIST.map(item => (item.group_name))).includes(group)) {
-                    hiddenText("#hidden_group", "Nome de grupo já existe na lista");
-                    $("#group").trigger("focus");
-                    return false;
-                }
-
-                // if (CONTACT_LIST_TEMP.length == 0) {
-                //     hiddenText("#hidden_contact", "Insira ao menos um Contato");
-                //     $("#input_contact").trigger("focus");
-                //     return false;
-                // }
-
-                if (KEYWORD_LIST_TEMP.length == 0) {
-                    hiddenText("#hidden_keyWord", "Insira ao menos uma Palavra-Chave");
-                    $("#input_keyWord").trigger("focus");
-                    return false;
-                }
-
-                if (RESPONSE_LIST_TEMP.length == 0) {
-                    hiddenText("#hidden_response", "Insira ao menos uma Resposta");
-                    $("#input_response").trigger("focus");
-                    return false;
-                }
-
-                return { group };
+                return validateMonitoringForm();
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                var group = $("#group").val();
+                var group = result.value.group;
 
                 var data = {
                     "group_name": group,
