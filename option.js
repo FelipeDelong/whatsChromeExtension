@@ -444,16 +444,18 @@ $(document).on("click", "#btn_add_response", function () {
 $(document).on("click", "#btn_add_date", function () {
     var date1 = $("#input_date1").val();
     var date2 = $("#input_date2").val();
+    var date1IsValid = isValidDateValue(date1);
+    var date2IsValid = isValidDateValue(date2);
     var date = {
         date1, date2
     }
 
     if (!date1 || !date2) {
         showRangeValidation("Informe as duas datas", !date1 ? "#input_date1" : "#input_date2");
-    } else if (!isValidDateValue(date1) || !isValidDateValue(date2)) {
+    } else if (!date1IsValid || !date2IsValid) {
         showRangeValidation(
             "Informe uma faixa de datas válida",
-            !isValidDateValue(date1) ? "#input_date1" : "#input_date2"
+            !date1IsValid ? "#input_date1" : "#input_date2"
         );
     } else if (date1 >= date2) {
         showRangeValidation("Informe uma faixa de datas válida", "#input_date2");
@@ -473,16 +475,18 @@ $(document).on("click", "#btn_add_date", function () {
 $(document).on("click", "#btn_add_time", function () {
     var time1 = $("#input_time1").val();
     var time2 = $("#input_time2").val();
+    var time1IsValid = isValidTimeValue(time1);
+    var time2IsValid = isValidTimeValue(time2);
     var time = {
         time1, time2
     }
 
     if (!time1 || !time2) {
         showRangeValidation("Informe os dois horários", !time1 ? "#input_time1" : "#input_time2");
-    } else if (!isValidTimeValue(time1) || !isValidTimeValue(time2)) {
+    } else if (!time1IsValid || !time2IsValid) {
         showRangeValidation(
             "Informe uma faixa de horários válida",
-            !isValidTimeValue(time1) ? "#input_time1" : "#input_time2"
+            !time1IsValid ? "#input_time1" : "#input_time2"
         );
     } else if (time1 === time2) {
         showRangeValidation("Informe uma faixa de horários válida", "#input_time2");
