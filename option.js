@@ -6,6 +6,35 @@ var RESPONSE_LIST_TEMP = [];
 var DATE_LIST_TEMP = [];
 var TIME_LIST_TEMP = [];
 
+function showRangeValidation(message, selector) {
+    Swal.showValidationMessage(message);
+    $(selector).trigger("focus");
+}
+
+function resetRangeValidation() {
+    if (typeof Swal.resetValidationMessage === "function") {
+        Swal.resetValidationMessage();
+    }
+}
+
+function isValidDateValue(value) {
+    var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+    if (!match) return false;
+
+    var year = Number(match[1]);
+    var month = Number(match[2]);
+    var day = Number(match[3]);
+    var date = new Date(year, month - 1, day, 12);
+
+    return date.getFullYear() === year
+        && date.getMonth() === month - 1
+        && date.getDate() === day;
+}
+
+function isValidTimeValue(value) {
+    return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(String(value || ""));
+}
+
 //bring the html for the modal
 function loadHtmlJQ(path) {
     return $.get(path);
@@ -419,17 +448,21 @@ $(document).on("click", "#btn_add_date", function () {
         date1, date2
     }
 
-    var value1 = new Date($("#input_date1").val() + 'T12:00:00');
-    var value2 = new Date($("#input_date2").val() + 'T12:00:00');
-
-    if (value1 == "Invalid Date" || value2 == "Invalid Date") {
-        hiddenText("#hidden_date", "Digite uma data para incluir na lista");
-    } else if (value1 >= value2) {
-        hiddenText("#hidden_date", "Datas inválidas");
-    } else if (DATE_LIST_TEMP.includes(date)) {
-        hiddenText("#hidden_date", "Essas datas já foram incluídas");
+    if (!date1 || !date2) {
+        showRangeValidation("Informe as duas datas", !date1 ? "#input_date1" : "#input_date2");
+    } else if (!isValidDateValue(date1) || !isValidDateValue(date2)) {
+        showRangeValidation(
+            "Informe uma faixa de datas válida",
+            !isValidDateValue(date1) ? "#input_date1" : "#input_date2"
+        );
+    } else if (date1 >= date2) {
+        showRangeValidation("Informe uma faixa de datas válida", "#input_date2");
+    } else if (DATE_LIST_TEMP.some(function (value) {
+        return value.date1 === date1 && value.date2 === date2;
+    })) {
+        showRangeValidation("Essa faixa de datas já foi incluída", "#input_date1");
     } else {
-
+        resetRangeValidation();
         $("#input_date1").val("");
         $("#input_date2").val("");
         DATE_LIST_TEMP.push(date);
@@ -445,13 +478,20 @@ $(document).on("click", "#btn_add_time", function () {
     }
 
     if (!time1 || !time2) {
-        hiddenText("#hidden_time", "Digite um horário para incluir na lista");
-    } else if (time1 >= time2) {
-        hiddenText("#hidden_time", "Horários inválidos");
-    } else if (TIME_LIST_TEMP.includes(time)) {
-        hiddenText("#hidden_time", "Esses horários já foram incluídos");
+        showRangeValidation("Informe os dois horários", !time1 ? "#input_time1" : "#input_time2");
+    } else if (!isValidTimeValue(time1) || !isValidTimeValue(time2)) {
+        showRangeValidation(
+            "Informe uma faixa de horários válida",
+            !isValidTimeValue(time1) ? "#input_time1" : "#input_time2"
+        );
+    } else if (time1 === time2) {
+        showRangeValidation("Informe uma faixa de horários válida", "#input_time2");
+    } else if (TIME_LIST_TEMP.some(function (value) {
+        return value.time1 === time1 && value.time2 === time2;
+    })) {
+        showRangeValidation("Essa faixa de horários já foi incluída", "#input_time1");
     } else {
-
+        resetRangeValidation();
         $("#input_time1").val("");
         $("#input_time2").val("");
         TIME_LIST_TEMP.push(time);
