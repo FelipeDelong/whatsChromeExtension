@@ -11,7 +11,7 @@
 <div class="col-12 mt-3">
     <div class="col-8 d-flex justify-content-start align-items-center">
         <div class="col-4">
-            <label><b>Nome do Grupo:<b class="textHidden"> * </b></b></label>
+            <label for="group"><b>Nome do Grupo:<b class="textHidden"> * </b></b></label>
         </div>
         <div class="col-8">
             <input id="group" class="form-control" data-id="0" type="text" placeholder="Copie e cole o nome do grupo">
@@ -107,16 +107,16 @@
 
 <div class="col-12 d-flex justify-content-center mt-2">
     <div class="col-5">
-        <div class="row">
+        <div class="row" role="group" aria-labelledby="date_range_label">
             <div class="col-12 d-flex justify-content-start">
-                <label>Data:</label>
+                <span id="date_range_label">Data:</span>
             </div>
             <div class="col-4">
-                <input class="form-control" id="input_date1" type="date">
+                <input class="form-control" id="input_date1" type="date" aria-label="Data inicial">
             </div>
             <div class="col-1 d-flex justify-content-center align-items-center range-separator">-</div>
             <div class="col-4">
-                <input class="form-control" id="input_date2" type="date">
+                <input class="form-control" id="input_date2" type="date" aria-label="Data final">
             </div>
             <div class="col-2 button-offset">
                 <button class="btn btnAdd2" id="btn_add_date" type="button">Incluir</button>
@@ -124,16 +124,16 @@
         </div>
     </div>
     <div class="col-5">
-        <div class="row">
+        <div class="row" role="group" aria-labelledby="time_range_label">
             <div class="col-12 d-flex justify-content-start">
-                <label>Horário:</label>
+                <span id="time_range_label">Horário:</span>
             </div>
             <div class="col-4">
-                <input class="form-control text-center" id="input_time1" type="time">
+                <input class="form-control text-center" id="input_time1" type="time" aria-label="Horário inicial">
             </div>
             <div class="col-1 d-flex justify-content-center align-items-center range-separator">-</div>
             <div class="col-4">
-                <input class="form-control text-center" id="input_time2" type="time">
+                <input class="form-control text-center" id="input_time2" type="time" aria-label="Horário final">
             </div>
             <div class="col-2 button-offset">
                 <button class="btn btnAdd2" id="btn_add_time" type="button">Incluir</button>
