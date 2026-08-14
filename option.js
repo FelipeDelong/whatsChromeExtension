@@ -160,7 +160,14 @@ async function loadMonitoringFormHtml() {
 }
 
 function formatThemeLabel(fileName) {
-    return String(fileName)
+    var labels = {
+        "default.css": "Padrão",
+        "dark-blue.css": "Azul escuro",
+        "light.css": "Claro",
+        "purple.css": "Roxo",
+    };
+
+    return labels[fileName] || String(fileName)
         .replace(/\.css$/i, "")
         .replace(/[-_]+/g, " ")
         .replace(/\b\w/g, function (letter) {
