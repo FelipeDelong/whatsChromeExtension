@@ -220,19 +220,7 @@ function getThemeFiles() {
 
 function applyTheme(themeFile) {
     var fileName = themeFile || "default.css";
-    var themeHref = THEME_PATH + "/" + fileName;
-    var themeLink = $("#themeStylesheet");
-
-    if (themeLink.length === 0) {
-        themeLink = $("link[href*='" + THEME_PATH + "/']");
-    }
-
-    if (themeLink.length > 0) {
-        themeLink.attr("href", themeHref);
-        return;
-    }
-
-    $("head").append(`<link rel="stylesheet" href="` + escapeHtml(themeHref) + `">`);
+    $("#themeStylesheet").attr("href", THEME_PATH + "/" + fileName);
 }
 
 //renderize the Main list of cards
