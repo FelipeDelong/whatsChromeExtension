@@ -33,6 +33,8 @@ function isValidDateValue(value) {
 
 function isValidTimeValue(value) {
     return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(String(value || ""));
+}
+
 function escapeHtml(value) {
     var characters = {
         "&": "&amp;",
