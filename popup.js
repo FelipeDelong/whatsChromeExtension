@@ -5,20 +5,8 @@ var THEME_PATH = "assets/css/themes";
 var LIST_ACTIVE = [];
 
 function applyTheme(themeFile) {
-    var fileName = themeFile || "default.css";
-    var themeHref = THEME_PATH + "/" + fileName;
-    var themeLink = $("#themeStylesheet");
-
-    if (themeLink.length === 0) {
-        themeLink = $("link[href*='" + THEME_PATH + "/']");
-    }
-
-    if (themeLink.length > 0) {
-        themeLink.attr("href", themeHref);
-        return;
-    }
-
-    $("head").append(`<link rel="stylesheet" href="` + themeHref + `">`);
+    var fileName = THEME_FILES.has(themeFile) ? themeFile : "default.css";
+    $("#themeStylesheet").attr("href", THEME_PATH + "/" + fileName);
 }
 
 async function openOrFocusWhats(status) {
