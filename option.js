@@ -581,8 +581,8 @@ function modal(id = false) {
 
 
 async function renderizeThemeList(theme = null) {
-    var selectedTheme = theme || "default.css";
     var themeFiles = await getThemeFiles();
+    var selectedTheme = themeFiles.includes(theme) ? theme : "default.css";
     var html = "";
 
     $.each(themeFiles, function (key, fileName) {
