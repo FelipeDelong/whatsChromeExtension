@@ -28,18 +28,18 @@
     --theme-color-scrollbar-track: transparent;
 
     /* Marca e destaques */
-    --theme-color-primary: #E50091;
+    --theme-color-primary: #E3008F;
     --theme-color-primary-hover: #530034;
     --theme-color-accent: #530034;
-    --theme-color-accent-hover: #E50091;
-    --theme-color-important: #E50091;
+    --theme-color-accent-hover: #E3008F;
+    --theme-color-important: #F02AA5;
 
     /* Acoes */
     --theme-color-success: #1E7619;
     --theme-color-success-hover: #0F3E0D;
     --theme-color-info: #1C719B;
     --theme-color-info-hover: #175676;
-    --theme-color-danger: #E50091;
+    --theme-color-danger: #F02AA5;
     --theme-color-disabled: #6E6E6E;
     --theme-color-disabled-hover: #2A2A2A;
 
