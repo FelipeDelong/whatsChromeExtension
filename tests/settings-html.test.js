@@ -44,26 +44,13 @@ test("all settings scripts stay inside the document and load with defer", () => 
 test("settings fields have accessible labels", () => {
     assert.match(modalHtml, /<label\b[^>]*\bfor=["']group["'][^>]*>/i);
 
-    [
-        ["input_date1", "Data inicial"],
-        ["input_date2", "Data final"],
-        ["input_time1", "Horário inicial"],
-        ["input_time2", "Horário final"],
-    ].forEach(([id, label]) => {
-        const input = new RegExp(
-            `<input\\b(?=[^>]*\\bid=["']${id}["'])(?=[^>]*\\baria-label=["']${label}["'])[^>]*>`,
-            "i",
-        );
-        assert.match(modalHtml, input);
+    ["input_date1", "input_date2", "input_time1", "input_time2"].forEach((id) => {
+        assert.match(modalHtml, new RegExp(`<label\\b[^>]*\\bfor=["']${id}["'][^>]*>`, "i"));
     });
 
-    ["date_range_label", "time_range_label"].forEach((labelId) => {
-        const group = new RegExp(
-            `<div\\b(?=[^>]*\\brole=["']group["'])(?=[^>]*\\baria-labelledby=["']${labelId}["'])[^>]*>`,
-            "i",
-        );
-        assert.match(modalHtml, group);
-    });
+    assert.match(modalHtml, /<fieldset\b[^>]*class=["'][^"']*schedule-field[^"']*["'][^>]*>/i);
+    assert.match(modalHtml, /<legend>Período por data <span>\(opcional\)<\/span><\/legend>/i);
+    assert.match(modalHtml, /<legend>Período por horário <span>\(opcional\)<\/span><\/legend>/i);
 });
 
 test("settings actions use semantic buttons", () => {

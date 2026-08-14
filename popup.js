@@ -23,8 +23,6 @@ function applyTheme(themeFile) {
     $("#themeStylesheet").attr("href", THEME_PATH + "/" + fileName);
 }
 
-async function openOrFocusWhats(status) {
-    const tabs = await chrome.tabs.query({ url: "https://web.whatsapp.com/*" });
 function wait(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }

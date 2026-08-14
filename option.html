@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <title>WhatsApp Monitor</title>
 
     <script src="assets/js/jquery.js" defer></script>
@@ -14,122 +15,101 @@
 
     <link rel="stylesheet" href="assets/css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/themes/default.css" id="themeStylesheet">
+    <link rel="stylesheet" href="assets/css/libs/sweetalert2.min.css">
     <link rel="stylesheet" href="assets/css/style_option.css">
     <link rel="stylesheet" href="assets/css/style_modal.css">
-    <link rel="stylesheet" href="assets/css/libs/sweetalert2.min.css">
 </head>
 
 <body>
-
-    <div class="divbtnAdd">
-        <div class="row d-flex justify-content-center align-items-center p-2">
-            <div class="col-8">
-                <button id="btnAdd" class="btn btnAdd text-nowrap" type="button">Adicionar Monitoramento</button>
+    <header class="app-header">
+        <div class="app-header__content">
+            <div class="app-heading">
+                <span class="app-heading__eyebrow">Configurações da extensão</span>
+                <h1 class="title">WhatsApp Web Monitor</h1>
             </div>
-            <div class="col-3">
+
+            <div class="theme-control">
+                <label for="selectTheme">Tema</label>
+                <select class="form-select" id="selectTheme"></select>
+            </div>
+
+            <div class="divbtnAdd app-actions" role="group" aria-label="Ações da configuração">
+                <button id="btnAdd" class="btn btnAdd" type="button">Adicionar Monitoramento</button>
                 <button id="btnSave" class="btn btnSave" type="button">Salvar</button>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="divbtnTheme">
-        <div class="row d-flex justify-content-center align-items-center p-2">
-            <div class="col-12">
-                <label for="selectTheme" class="visually-hidden">Tema</label>
-                <select class="form-select" id="selectTheme">
-                </select>
+    <main class="page-content">
+        <section class="instructions" aria-labelledby="instructions-title">
+            <header class="section-heading">
+                <span class="section-heading__eyebrow">Primeiros passos</span>
+                <h2 id="instructions-title">Como configurar o monitoramento?</h2>
+            </header>
+
+            <ol class="instructions__steps">
+                <li class="instruction-step instruction-step--featured">
+                    <p>
+                        <b class="important">Passo 1 →</b>
+                        Clique em "Adicionar Monitoramento" e preencha os dados da conversa:
+                    </p>
+                    <ul class="field-guide">
+                        <li>
+                            <b class="important">Grupo ou contato:</b> Copie e cole o nome exatamente como ele
+                            aparece no WhatsApp Web.
+                        </li>
+                        <li>
+                            <b class="important">Contatos (opcional):</b> Em grupos, adicione os participantes cujas
+                            mensagens devem ser consideradas. Se a lista ficar vazia, todos os contatos serão considerados.
+                        </li>
+                        <li>
+                            <b class="important">Palavras-chave:</b> Adicione as palavras ou frases que devem iniciar
+                            uma resposta.
+                        </li>
+                        <li>
+                            <b class="important">Respostas:</b> Adicione uma ou mais respostas. Quando uma palavra-chave
+                            for encontrada, a extensão selecionará uma resposta da lista.
+                        </li>
+                        <li>
+                            <b class="important">Períodos (opcional):</b> Defina datas ou horários para limitar o envio
+                            das respostas.
+                        </li>
+                    </ul>
+                    <p class="instruction-step__note">Ao concluir o cadastro, clique em "Salvar".</p>
+                </li>
+                <li class="instruction-step">
+                    <p><b class="important">Passo 2 →</b> Abra o WhatsApp Web no navegador.</p>
+                </li>
+                <li class="instruction-step">
+                    <p><b class="important">Passo 3 →</b> Abra a conversa que deseja monitorar.</p>
+                </li>
+                <li class="instruction-step">
+                    <p>
+                        <b class="important">Passo 4 →</b>
+                            Ative o "WhatsApp Web Monitor" na tela do WhatsApp Web e aguarde a chegada das mensagens. O
+                            monitoramento continuará funcionando quando outra aba estiver ativa, desde que o WhatsApp Web
+                            permaneça aberto.
+                    </p>
+                </li>
+            </ol>
+
+            <aside class="instructions__note">
+                <b class="important">Observação:</b> É possível ativar ou desativar os monitoramentos a qualquer
+                momento. Lembre-se de salvar as alterações.
+            </aside>
+        </section>
+
+        <section class="group-list-panel" aria-labelledby="monitoring-list-title">
+            <header class="divSubtitle">
+                <span class="section-heading__eyebrow">Cadastros</span>
+                <h2 class="subtitle" id="monitoring-list-title">Lista de monitoramentos</h2>
+            </header>
+
+            <div class="screen">
+                <div class="monitoring-list" id="list" aria-live="polite"></div>
             </div>
-        </div>
-    </div>
-
-    <div class="col-12 justify-content-center">
-
-        <div class="row">
-
-            <div class="col-12 mt-2">
-                <div class="row">
-                    <div class="col-12 d-flex justify-content-center">
-                        <h1 class="title m-0">WhatsApp Web Monitor</h1>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="row">
-
-            <div class="col-10 instructions">
-                <div class="row">
-                    <div class="col-12 d-flex justify-content-start">
-                        <section>
-                            <h3>Como configurar o monitoramento?</h3>
-                            <p>
-                                <b class="important">Passo 1 →</b>
-                                Clique em "Adicionar Monitoramento" e preencha os dados da conversa:
-                            </p>
-                            <ul>
-                                <li><b class="important">Grupo ou contato:</b> Copie e cole o nome exatamente como ele
-                                    aparece no WhatsApp Web.
-                                </li>
-                                <li><b class="important">Contatos (opcional):</b> Em grupos, adicione os participantes
-                                    cujas mensagens devem ser consideradas. Se a lista ficar vazia, todos os contatos
-                                    serão considerados.</li>
-                                <li><b class="important">Palavras-chave:</b> Adicione as palavras ou frases que devem
-                                    iniciar uma resposta.</li>
-                                <li><b class="important">Respostas:</b> Adicione uma ou mais respostas. Quando uma
-                                    palavra-chave for encontrada, a extensão selecionará uma resposta da lista.</li>
-                                <li><b class="important">Períodos (opcional):</b> Defina datas ou horários para limitar
-                                    o envio das respostas.</li>
-                            </ul>
-                            <p>Ao concluir o cadastro, clique em "Salvar".</p>
-                            <p>
-                                <b class="important">Passo 2 →</b>
-                                Abra o WhatsApp Web no navegador.
-                            </p>
-                            <p>
-                                <b class="important">Passo 3 →</b>
-                                Abra a conversa que deseja monitorar.
-                            </p>
-                            <p>
-                                <b class="important">Passo 4 →</b>
-                                Ative o "WhatsApp Web Monitor" na tela do WhatsApp Web e aguarde a chegada das
-                                mensagens. O monitoramento continuará funcionando quando outra aba estiver ativa,
-                                desde que o WhatsApp Web permaneça aberto.
-                            </p>
-                            <p>
-                                <b class="important">Observação:</b> É possível ativar ou desativar os monitoramentos
-                                a qualquer momento. Lembre-se de salvar as alterações.
-                            </p>
-                        </section>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="col-11 group-list-panel">
-
-            <div class="row">
-
-                <div class="col-3 divSubtitle d-flex justify-content-center align-items-center">
-                    <h2 class="subtitle m-0">LISTA DE MONITORAMENTOS</h2>
-                </div>
-
-            </div>
-
-            <div class="row justify-content-center">
-                <div class="col-11 screen">
-                    <div class="row justify-content-left" id="list">
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-
-    </div>
-
+        </section>
+    </main>
 </body>
 
 </html>

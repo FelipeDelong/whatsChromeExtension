@@ -1,162 +1,109 @@
-<div class="col-12 hiddenCard">
-    <div class="col-8 d-flex align-items-center justify-content-center">
-        <div class="col-4">
-        </div>
-        <div class="col-8">
-            <div class="textHidden" id="hidden_group" hidden></div>
-        </div>
-    </div>
-</div>
-
-<div class="col-12 mt-3">
-    <div class="col-8 d-flex justify-content-start align-items-center">
-        <div class="col-4">
-            <label for="group"><b>Grupo ou contato:<b class="textHidden"> * </b></b></label>
-        </div>
-        <div class="col-8">
+<div class="monitor-form">
+    <section class="monitor-form__identity" aria-labelledby="group-label">
+        <div class="form-field">
+            <label class="form-label" id="group-label" for="group">
+                Grupo ou contato:
+                <span class="required-indicator" aria-hidden="true">*</span>
+                <span class="visually-hidden">Campo obrigatório</span>
+            </label>
             <input id="group" class="form-control" data-id="0" type="text"
-                placeholder="Nome exibido no WhatsApp">
+                placeholder="Nome exibido no WhatsApp" aria-describedby="group-help hidden_group" required>
+            <small class="form-hint" id="group-help">Use o nome exibido na lista de conversas do WhatsApp.</small>
+            <div class="field-error" id="hidden_group" aria-live="polite" hidden></div>
         </div>
-    </div>
-</div>
+    </section>
 
-<div class="col-12 d-flex mt-3">
-
-    <div class="col-4">
-        <div class="col-6">
-            <label>Contato (opcional):</label>
-        </div>
-        <div class="row d-flex justify-content-center">
-            <div class="col-8">
+    <div class="monitor-form__lists">
+        <section class="repeatable-field" aria-labelledby="contact-field-label">
+            <header class="repeatable-field__header">
+                <label class="form-label" id="contact-field-label" for="input_contact">Contato (opcional):</label>
+                <small class="form-hint">Deixe vazio para considerar todos os participantes.</small>
+            </header>
+            <div class="repeatable-field__control">
                 <input class="form-control" id="input_contact" data-id="1" type="text"
-                    placeholder="Nome do contato">
+                    placeholder="Nome do contato" aria-controls="contact_list">
+                <button class="btn btnAdd2" id="btn_add_contact" type="button"
+                    aria-controls="contact_list">Incluir</button>
             </div>
-            <div class="col-2 button-offset">
-                <button class="btn btnAdd2" id="btn_add_contact" type="button">Incluir</button>
-            </div>
-        </div>
-    </div>
+            <div class="modalCard modal-list" id="contact_list" aria-live="polite"></div>
+        </section>
 
-    <div class="col-4">
-        <div class="col-7">
-            <label>Palavra-chave:<b class="textHidden"> * </b></label>
-        </div>
-        <div class="row d-flex justify-content-center">
-            <div class="col-8">
+        <section class="repeatable-field" aria-labelledby="keyword-field-label">
+            <header class="repeatable-field__header">
+                <label class="form-label" id="keyword-field-label" for="input_keyWord">
+                    Palavra-chave:
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                    <span class="visually-hidden">Campo obrigatório</span>
+                </label>
+                <small class="form-hint">Informe uma palavra ou frase por vez.</small>
+            </header>
+            <div class="repeatable-field__control">
                 <input class="form-control" id="input_keyWord" data-id="2" type="text"
-                    placeholder="Termo a ser encontrado">
+                    placeholder="Termo a ser encontrado" aria-controls="keyWord_list">
+                <button class="btn btnAdd2" id="btn_add_keyWord" type="button"
+                    aria-controls="keyWord_list">Incluir</button>
             </div>
-            <div class="col-2 button-offset">
-                <button class="btn btnAdd2" id="btn_add_keyWord" type="button">Incluir</button>
-            </div>
-        </div>
+            <div class="modalCard modal-list" id="keyWord_list" aria-live="polite"></div>
+        </section>
 
-    </div>
-
-    <div class="col-4">
-        <div class="col-6">
-            <label>Resposta:<b class="textHidden"> * </b></label>
-        </div>
-        <div class="row d-flex justify-content-center">
-            <div class="col-8">
+        <section class="repeatable-field" aria-labelledby="response-field-label">
+            <header class="repeatable-field__header">
+                <label class="form-label" id="response-field-label" for="input_response">
+                    Resposta:
+                    <span class="required-indicator" aria-hidden="true">*</span>
+                    <span class="visually-hidden">Campo obrigatório</span>
+                </label>
+                <small class="form-hint">Informe uma resposta por vez.</small>
+            </header>
+            <div class="repeatable-field__control">
                 <input class="form-control" id="input_response" data-id="3" type="text"
-                    placeholder="Resposta a ser enviada">
+                    placeholder="Resposta a ser enviada" aria-controls="response_list">
+                <button class="btn btnAdd2" id="btn_add_response" type="button"
+                    aria-controls="response_list">Incluir</button>
             </div>
-            <div class="col-2 button-offset">
-                <button class="btn btnAdd2" id="btn_add_response" type="button">Incluir</button>
-            </div>
-        </div>
+            <div class="modalCard modal-list" id="response_list" aria-live="polite"></div>
+        </section>
     </div>
 
-</div>
-
-<div class="col-12 d-flex mt-3 list-row-offset">
-
-    <div class="col-4">
-        <div class="row d-flex justify-content-center">
-            <div class="col-10 modalCard" id="contact_list">
-            </div>
-        </div>
-    </div>
-
-    <div class="col-4">
-        <div class="row d-flex justify-content-center">
-            <div class="col-10 modalCard" id="keyWord_list">
-            </div>
-        </div>
-
-    </div>
-
-    <div class="col-4">
-        <div class="row d-flex justify-content-center">
-            <div class="col-10 modalCard" id="response_list">
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="col-12 hiddenCard p-3">
-    <div class="row">
-        <div class="col-6">
-            <div class="textHidden" id="hidden_date" hidden></div>
-        </div>
-        <div class="col-6 text-start">
-            <div class="textHidden" id="hidden_time" hidden></div>
-        </div>
-    </div>
-</div>
-
-<div class="col-12 d-flex justify-content-center mt-2">
-    <div class="col-5">
-        <div class="row" role="group" aria-labelledby="date_range_label">
-            <div class="col-12 d-flex justify-content-start">
-                <span id="date_range_label">Data:</span>
-            </div>
-            <div class="col-4">
-                <input class="form-control" id="input_date1" type="date" aria-label="Data inicial">
-            </div>
-            <div class="col-1 d-flex justify-content-center align-items-center range-separator">-</div>
-            <div class="col-4">
-                <input class="form-control" id="input_date2" type="date" aria-label="Data final">
-            </div>
-            <div class="col-2 button-offset">
-                <button class="btn btnAdd2" id="btn_add_date" type="button">Incluir</button>
-            </div>
-        </div>
-    </div>
-    <div class="col-5">
-        <div class="row" role="group" aria-labelledby="time_range_label">
-            <div class="col-12 d-flex justify-content-start">
-                <span id="time_range_label">Horário:</span>
-            </div>
-            <div class="col-4">
-                <input class="form-control text-center" id="input_time1" type="time" aria-label="Horário inicial">
-            </div>
-            <div class="col-1 d-flex justify-content-center align-items-center range-separator">-</div>
-            <div class="col-4">
-                <input class="form-control text-center" id="input_time2" type="time" aria-label="Horário final">
-            </div>
-            <div class="col-2 button-offset">
-                <button class="btn btnAdd2" id="btn_add_time" type="button">Incluir</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="col-12 mt-3">
-    <div class="row">
-        <div class="col-6">
-            <div class="col-10 d-flex justify-content-end ms-4">
-                <div class="col-10 modalCard2" id="date_list">
+    <div class="monitor-form__schedule">
+        <fieldset class="schedule-field">
+            <legend>Período por data <span>(opcional)</span></legend>
+            <p class="form-hint">Inclua uma data inicial e uma data final.</p>
+            <div class="schedule-field__control">
+                <div class="form-field form-field--compact">
+                    <label for="input_date1">Data inicial</label>
+                    <input class="form-control" id="input_date1" type="date" aria-describedby="hidden_date">
                 </div>
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="col-10 d-flex justify-content-start">
-                <div class="col-10 modalCard2" id="time_list">
+                <span class="schedule-field__connector" aria-hidden="true">até</span>
+                <div class="form-field form-field--compact">
+                    <label for="input_date2">Data final</label>
+                    <input class="form-control" id="input_date2" type="date" aria-describedby="hidden_date">
                 </div>
+                <button class="btn btnAdd2" id="btn_add_date" type="button"
+                    aria-controls="date_list">Incluir</button>
             </div>
-        </div>
+            <div class="field-error" id="hidden_date" aria-live="polite" hidden></div>
+            <div class="modalCard2 modal-list modal-list--compact" id="date_list" aria-live="polite"></div>
+        </fieldset>
+
+        <fieldset class="schedule-field">
+            <legend>Período por horário <span>(opcional)</span></legend>
+            <p class="form-hint">Inclua um horário inicial e um horário final.</p>
+            <div class="schedule-field__control">
+                <div class="form-field form-field--compact">
+                    <label for="input_time1">Horário inicial</label>
+                    <input class="form-control" id="input_time1" type="time" aria-describedby="hidden_time">
+                </div>
+                <span class="schedule-field__connector" aria-hidden="true">até</span>
+                <div class="form-field form-field--compact">
+                    <label for="input_time2">Horário final</label>
+                    <input class="form-control" id="input_time2" type="time" aria-describedby="hidden_time">
+                </div>
+                <button class="btn btnAdd2" id="btn_add_time" type="button"
+                    aria-controls="time_list">Incluir</button>
+            </div>
+            <div class="field-error" id="hidden_time" aria-live="polite" hidden></div>
+            <div class="modalCard2 modal-list modal-list--compact" id="time_list" aria-live="polite"></div>
+        </fieldset>
     </div>
 </div>

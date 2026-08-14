@@ -374,14 +374,11 @@ function renderizeMainList(list = MAIN_LIST) {
 function renderizeList_contact() {
     var html = "";
     $.each(CONTACT_LIST_TEMP, function (key, value) {
-        html += `   <div class="col-12 d-flex justify-content-center">
-                        <div class="col-10">
-                            ` + escapeHtml(value) + `
-                        </div>
-                        <div class="col-2 btnExclude" id="btnExcludeContact" data-id="` + key + `">
-                            x
-                        </div>
-                    </div>`;
+        html += `<div class="modal-list__item">
+                    <span class="modal-list__value">` + escapeHtml(value) + `</span>
+                    <button class="btnExclude action-remove-contact" data-id="` + key + `" type="button"
+                        aria-label="Remover contato ` + (key + 1) + `">×</button>
+                </div>`;
     });
 
     $("#contact_list").html(html);
@@ -391,14 +388,11 @@ function renderizeList_contact() {
 function renderizeList_keyWord() {
     var html = "";
     $.each(KEYWORD_LIST_TEMP, function (key, value) {
-        html += `   <div class="col-12 d-flex justify-content-center">
-                        <div class="col-10">
-                            ` + escapeHtml(value) + `
-                        </div>
-                        <div class="col-2 btnExclude" id="btnExcludeKeyWord" data-id="` + key + `">
-                            x
-                        </div>
-                    </div>`;
+        html += `<div class="modal-list__item">
+                    <span class="modal-list__value">` + escapeHtml(value) + `</span>
+                    <button class="btnExclude action-remove-keyword" data-id="` + key + `" type="button"
+                        aria-label="Remover palavra-chave ` + (key + 1) + `">×</button>
+                </div>`;
     });
 
     $("#keyWord_list").html(html);
@@ -408,14 +402,11 @@ function renderizeList_keyWord() {
 function renderizeList_response() {
     var html = "";
     $.each(RESPONSE_LIST_TEMP, function (key, value) {
-        html += `   <div class="col-12 d-flex justify-content-center">
-                        <div class="col-10">
-                            ` + escapeHtml(value) + `
-                        </div>
-                        <div class="col-2 btnExclude" id="btnExcludeResponse" data-id="` + key + `">
-                            x
-                        </div>
-                    </div>`;
+        html += `<div class="modal-list__item">
+                    <span class="modal-list__value">` + escapeHtml(value) + `</span>
+                    <button class="btnExclude action-remove-response" data-id="` + key + `" type="button"
+                        aria-label="Remover resposta ` + (key + 1) + `">×</button>
+                </div>`;
     });
 
     $("#response_list").html(html);
@@ -430,14 +421,11 @@ function renderizeList_date() {
         var temp2 = value.date2.split('-');
         var date2 = temp2[2] + "/" + temp2[1] + "/" + temp2[0];
 
-        html += `   <div class="col-12 d-flex justify-content-center">
-                        <div class="col-10">
-                            ` + escapeHtml(date1) + ` - ` + escapeHtml(date2) + `
-                        </div>
-                        <div class="col-2 btnExclude" id="btnExcludeDate" data-id="` + key + `">
-                            x
-                        </div>
-                    </div>`;
+        html += `<div class="modal-list__item">
+                    <span class="modal-list__value">` + escapeHtml(date1) + ` – ` + escapeHtml(date2) + `</span>
+                    <button class="btnExclude action-remove-date" data-id="` + key + `" type="button"
+                        aria-label="Remover período de data ` + (key + 1) + `">×</button>
+                </div>`;
     });
 
     $("#date_list").html(html);
@@ -447,14 +435,11 @@ function renderizeList_date() {
 function renderizeList_time() {
     var html = "";
     $.each(TIME_LIST_TEMP, function (key, value) {
-        html += `   <div class="col-12 d-flex justify-content-center">
-                        <div class="col-10">
-                            ` + escapeHtml(value.time1) + ` - ` + escapeHtml(value.time2) + `
-                        </div>
-                        <div class="col-2 btnExclude" id="btnExcludeTime" data-id="` + key + `">
-                            x
-                        </div>
-                    </div>`;
+        html += `<div class="modal-list__item">
+                    <span class="modal-list__value">` + escapeHtml(value.time1) + ` – ` + escapeHtml(value.time2) + `</span>
+                    <button class="btnExclude action-remove-time" data-id="` + key + `" type="button"
+                        aria-label="Remover período de horário ` + (key + 1) + `">×</button>
+                </div>`;
     });
 
     $("#time_list").html(html);
@@ -514,6 +499,9 @@ function modal(id = false) {
             allowOutsideClick: false,
             backdrop: "rgba(0,0,0,0.55)",
             html: html,
+            customClass: {
+                popup: "monitoring-modal",
+            },
             didOpen: () => {
                 if (id !== false) {
                     var record = normalizeMonitoringRecord(MAIN_LIST[id]);
@@ -684,7 +672,7 @@ $(document).on("click", "#btn_add_time", function () {
     }
 });
 
-$(document).on("click", "#btnExcludeContact", function () {
+$(document).on("click", ".action-remove-contact", function () {
     var id = $(this).attr('data-id');
 
     excludeList(id, 1);
@@ -692,7 +680,7 @@ $(document).on("click", "#btnExcludeContact", function () {
     renderizeList_contact();
 });
 
-$(document).on("click", "#btnExcludeKeyWord", function () {
+$(document).on("click", ".action-remove-keyword", function () {
     var id = $(this).attr('data-id');
 
     excludeList(id, 2);
@@ -700,7 +688,7 @@ $(document).on("click", "#btnExcludeKeyWord", function () {
     renderizeList_keyWord();
 });
 
-$(document).on("click", "#btnExcludeResponse", function () {
+$(document).on("click", ".action-remove-response", function () {
     var id = $(this).attr('data-id');
 
     excludeList(id, 3);
@@ -708,7 +696,7 @@ $(document).on("click", "#btnExcludeResponse", function () {
     renderizeList_response();
 });
 
-$(document).on("click", "#btnExcludeDate", function () {
+$(document).on("click", ".action-remove-date", function () {
     var id = $(this).attr('data-id');
 
     excludeList(id, 4);
@@ -716,7 +704,7 @@ $(document).on("click", "#btnExcludeDate", function () {
     renderizeList_date();
 });
 
-$(document).on("click", "#btnExcludeTime", function () {
+$(document).on("click", ".action-remove-time", function () {
     var id = $(this).attr('data-id');
 
     excludeList(id, 5);
@@ -750,6 +738,9 @@ $(document).on("click", "#btnAdd", function () {
             allowOutsideClick: false,
             backdrop: "rgba(0,0,0,0.55)",
             html: html,
+            customClass: {
+                popup: "monitoring-modal",
+            },
             preConfirm: () => {
                 return validateMonitoringForm();
             }

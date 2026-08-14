@@ -31,7 +31,7 @@ test("obsolete wording and misleading claims do not return", () => {
 });
 
 test("contact field is marked as optional", () => {
-    assert.match(modalHtml, /<label>Contato \(opcional\):<\/label>/);
+    assert.match(modalHtml, /<label\b[^>]*>Contato \(opcional\):<\/label>/);
     assert.match(modalHtml, /Grupo ou contato:/);
     assert.doesNotMatch(modalHtml, /Contanto/);
 });
