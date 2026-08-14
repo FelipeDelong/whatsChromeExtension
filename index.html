@@ -18,22 +18,23 @@
 <body>
 
     <div class="col-12 d-flex justify-content-center">
-        <div class="row" style="height: 5rem;">
+        <div class="row popup-title-row">
             <div class="col-12 divTittle d-flex justify-content-center align-items-center mt-2">
                 <label class="subtitle">WhatsApp Web Monitor</label>
             </div>
         </div>
     </div>
 
-    <div class="col-12">
+    <div id="screen1" role="status" aria-live="polite">
+        <span class="loader" aria-hidden="true"></span>
+        <span class="visually-hidden">Carregando...</span>
+    </div>
+
+    <div class="col-12" id="screen2" hidden>
 
         <div class="row">
-            <div class="col-12 d-flex justify-content-center align-items-center" id="hyperlink" style="padding: 1rem;">
-                <div class="col-8">
-                    <button class="form-control btn btnWhats">
-                        <label class="hyperlinkWhats">Ligar Monitoramento</label>
-                    </button>
-                </div>
+            <div class="col-12 d-flex justify-content-center align-items-center p-3" id="hyperlink">
+
             </div>
         </div>
 
