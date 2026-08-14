@@ -1,6 +1,25 @@
 var LIST_NAME = "list";
 var ACTIVE = "active";
+var THEME_NAME = "theme";
+var THEME_PATH = "assets/css/themes";
 var LIST_ACTIVE = [];
+
+function applyTheme(themeFile) {
+    var fileName = themeFile || "default.css";
+    var themeHref = THEME_PATH + "/" + fileName;
+    var themeLink = $("#themeStylesheet");
+
+    if (themeLink.length === 0) {
+        themeLink = $("link[href*='" + THEME_PATH + "/']");
+    }
+
+    if (themeLink.length > 0) {
+        themeLink.attr("href", themeHref);
+        return;
+    }
+
+    $("head").append(`<link rel="stylesheet" href="` + themeHref + `">`);
+}
 
 async function openOrFocusWhats(status) {
     const tabs = await chrome.tabs.query({ url: "https://web.whatsapp.com/*" });
@@ -84,6 +103,10 @@ function checkMonitor(whats) {
 }
 
 $(document).ready(async function () {
+    chrome.storage.local.get([THEME_NAME], (res) => {
+        applyTheme(res.theme);
+    });
+
     id_tab = await openOrFocusWhats(false);
     checkMonitor(id_tab);
 });
