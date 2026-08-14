@@ -1,14 +1,16 @@
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>WhatsApp Monitor</title>
 
-    <script src="assets/js/jquery.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/jquery.btnswitch.min.js"></script>
-    <script src="assets/js/sweetalert2.min.js"></script>
+    <script src="assets/js/jquery.js" defer></script>
+    <script src="assets/js/bootstrap.bundle.min.js" defer></script>
+    <script src="assets/js/jquery.btnswitch.min.js" defer></script>
+    <script src="assets/js/sweetalert2.min.js" defer></script>
+    <script src="option.js" defer></script>
 
     <link rel="stylesheet" href="assets/css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/style_option.css">
@@ -19,12 +21,12 @@
 <body>
 
     <div class="divbtnAdd">
-        <div class="row d-flex justify-content-center align-items-center" style="padding: .5rem;">
+        <div class="row d-flex justify-content-center align-items-center p-2">
             <div class="col-8">
-                <input id="btnAdd" class="btn btnAdd" type="button" value="Adicionar Monitoramento">
+                <button id="btnAdd" class="btn btnAdd" type="button">Adicionar Monitoramento</button>
             </div>
             <div class="col-3">
-                <input id="btnSave" class="btn btnSave" type="button" value="Salvar">
+                <button id="btnSave" class="btn btnSave" type="button">Salvar</button>
             </div>
         </div>
     </div>
@@ -36,7 +38,7 @@
             <div class="col-12 mt-2">
                 <div class="row">
                     <div class="col-12 d-flex justify-content-center">
-                        <label class="title">WhatsApp Web Monitor</label>
+                        <h1 class="title m-0">WhatsApp Web Monitor</h1>
                     </div>
                 </div>
             </div>
@@ -45,15 +47,16 @@
 
         <div class="row">
 
-            <div class="col-10 mt-2" style="margin: 5rem; margin-bottom: 0px">
+            <div class="col-10 instructions">
                 <div class="row">
-                    <div class="col-12 d-flex justify-content-left">
+                    <div class="col-12 d-flex justify-content-start">
                         <section>
                             <h3>Como usar essa Extensão?</h3>
                             <p>
                                 <b class="important">Passo 1 →</b>
                                 Clique em "Adicionar Monitoramento" para inserir um novo registro do que deseja
                                 monitorar. O software precisa das seguintes informações para funcionar:
+                            </p>
                             <ul>
                                 <li><b class="important">Nome do Contato:</b> É utlizado comparação direta, isso
                                     significa que se a escrita não for exatamente igual ao do seu WhatsApp pode não
@@ -70,17 +73,20 @@
                                 <li><b class="important">Opcional:</b> Essa extenção tambem tem a opção disponível de
                                     escolher a data ou horário em que as respostas são enviadas.</li>
                             </ul>
-                            Assim que terminar clique em "Salvar".
+                            <p>Assim que terminar clique em "Salvar".</p>
+                            <p>
+                                <b class="important">Passo 2 →</b>
+                                Conecte o seu WhatsApp Web no navegador.
                             </p>
-                            <b class="important">Passo 2 →</b>
-                            Conecte o seu WhatsApp Web no navegador.
+                            <p>
+                                <b class="important">Passo 3 →</b>
+                                Abra a conversa do contato ou grupo que deseja monitorar.
                             </p>
-                            </p>
-                            <b class="important">Passo 3 →</b>
-                            Abra a conversa do contato ou grupo que deseja monitorar.
-                            </p>
-                            <b class="important">Passo 4 →</b>
-                            Ative o "WhatsApp Web Monitor" na tela do seu WhatsApp Web e espere as mensagens chegarem. O monitoramente funciona mesmo a tela esteja em outra gruia, então se sinta livre para usar o comportamenteo livremente, desde que o WhatsApp Web esteja aberto.
+                            <p>
+                                <b class="important">Passo 4 →</b>
+                                Ative o "WhatsApp Web Monitor" na tela do seu WhatsApp Web e espere as mensagens
+                                chegarem. O monitoramente funciona mesmo a tela esteja em outra gruia, então se sinta
+                                livre para usar o comportamenteo livremente, desde que o WhatsApp Web esteja aberto.
                             </p>
                             <p>
                                 <b class="important">PS: </b> É possível ativar/desativar os grupos a serem monitorados
@@ -93,12 +99,12 @@
 
         </div>
 
-        <div class="col-11" style="margin: 5rem; margin-top: 2rem; background-color: #292929; border-radius: 20px;">
+        <div class="col-11 group-list-panel">
 
             <div class="row">
 
                 <div class="col-3 divSubtitle d-flex justify-content-center align-items-center">
-                    <label class="subtitle">LISTA DE GRUPOS</label>
+                    <h2 class="subtitle m-0">LISTA DE GRUPOS</h2>
                 </div>
 
             </div>
@@ -119,5 +125,3 @@
 </body>
 
 </html>
-
-<script src="option.js"></script>
