@@ -21,29 +21,34 @@ async function openOrFocusWhats(status) {
     return id_tab;
 }
 
+var loadingObserver = null;
+var loadingTimeout = null;
+
+function finishLoading() {
+    loadingObserver?.disconnect();
+    loadingObserver = null;
+    clearTimeout(loadingTimeout);
+    loadingTimeout = null;
+    $("#screen1").prop("hidden", true);
+    $("#screen2").prop("hidden", false);
+}
+
 function switchScreen() {
-    return new Promise((resolve) => {
-        var $s1 = $("#screen1");
-        var $s2 = $("#screen2");
+    finishLoading();
+    $("#screen1").prop("hidden", false);
+    $("#screen2").prop("hidden", true);
 
-        $s2.attr("hidden", false).show();
-        $s1.attr("hidden", true).hide();
+    var content = document.getElementById("hyperlink");
+    loadingObserver = new MutationObserver(finishLoading);
+    loadingObserver.observe(content, { childList: true });
 
-        $s2.stop(true, true).fadeOut(300, function () {
-            $(this).attr("hidden", true);
-        });
-
-        $s1.attr("hidden", false).hide().stop(true, true).fadeIn(200);
-
-        setTimeout(function () {
-            $s1.stop(true, true).fadeOut(300, function () {
-                $(this).attr("hidden", true);
-            });
-
-            $s2.attr("hidden", false).hide().stop(true, true).fadeIn(200);
-            resolve(true);
-        }, 500);
-    });
+    loadingTimeout = setTimeout(function () {
+        loadingObserver?.disconnect();
+        $("#hyperlink").html(
+            '<p class="warning" role="alert">Não foi possível atualizar o monitoramento.</p>'
+        );
+        finishLoading();
+    }, 5000);
 }
 
 function checkMonitor(whats) {
