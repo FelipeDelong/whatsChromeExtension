@@ -21,7 +21,30 @@ async function openOrFocusWhats(status) {
     return id_tab;
 }
 
+function switchScreen() {
+    return new Promise((resolve) => {
+        var $s1 = $("#screen1");
+        var $s2 = $("#screen2");
 
+        $s2.attr("hidden", false).show();
+        $s1.attr("hidden", true).hide();
+
+        $s2.stop(true, true).fadeOut(300, function () {
+            $(this).attr("hidden", true);
+        });
+
+        $s1.attr("hidden", false).hide().stop(true, true).fadeIn(200);
+
+        setTimeout(function () {
+            $s1.stop(true, true).fadeOut(300, function () {
+                $(this).attr("hidden", true);
+            });
+
+            $s2.attr("hidden", false).hide().stop(true, true).fadeIn(200);
+            resolve(true);
+        }, 500);
+    });
+}
 
 function checkMonitor(whats) {
     setTimeout(function () {
@@ -31,9 +54,7 @@ function checkMonitor(whats) {
                 var active = false;
                 var now = Date.now();
 
-                console.log(response);
-
-                if (response.length > 0) {
+                if (response?.active) {
 
                     var dateDiff = (now - response.active.date_time) / (1000 * 60 * 60);
 
@@ -43,7 +64,8 @@ function checkMonitor(whats) {
                 }
 
 
-                LIST = res.list;
+                LIST = res.list || [];
+                LIST_ACTIVE = [];
 
                 var html = ``;
                 $.each(LIST, function (key, value) {
@@ -85,10 +107,12 @@ function checkMonitor(whats) {
 
 $(document).ready(async function () {
     id_tab = await openOrFocusWhats(false);
+    await switchScreen();
     checkMonitor(id_tab);
 });
 
 $(document).on('click', '.btnWhats', async function () {
+    await switchScreen();
 
     var data = {
         on: true,
