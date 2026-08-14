@@ -2,6 +2,9 @@ var LIST_NAME = "list";
 var ACTIVE = "active";
 
 var ON = false;
+var MONITOR_RUN_ID = 0;
+var MONITOR_START_PROMISE = null;
+var MONITOR_LOOP_ACTIVE = false;
 var LIST_ACTIVE = [];
 var LIST_ID = [];
 
@@ -581,73 +584,195 @@ function prepareList() {
     var list_temp = [];
 
     chrome.storage.local.get([LIST_NAME], (res) => {
-
-      console.log(res);
-
-      $.each(res.list, function (key, value) {
+      $.each(res?.list || [], function (key, value) {
         if (value.active) {
           list_temp.push(value);
-
-          LIST_ACTIVE = list_temp;
         }
       });
 
-      resolve(LIST_ACTIVE.length > 0 ? true : false);
+      LIST_ACTIVE = list_temp;
+      resolve(LIST_ACTIVE.length > 0);
 
     });
   });
 }
 
-async function startLoop() {
-  chrome.storage.local.get([ACTIVE], async (res) => {
-    var now = Date.now();
+function readStoredMonitorState() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get([ACTIVE], (res) => {
+      var error = chrome.runtime.lastError;
 
-    var dateDiff = (now - res.active.date_time) / (1000 * 60 * 60);
+      if (error) {
+        reject(new Error(error.message || "Não foi possível ler o estado do monitor."));
+        return;
+      }
 
-    if (res.active.on == true && dateDiff <= 2) {
-      var result = await prepareList();
+      resolve(res?.active || null);
+    });
+  });
+}
 
-      if (result) {
-        while (true && ON) {
+function isStoredMonitorActive(activeState) {
+  if (activeState?.on !== true) return false;
 
-          var result = await observeContacts();
+  var dateTime = Number(activeState.date_time);
+  if (!Number.isFinite(dateTime)) return false;
 
-          if (result) {
-            var response = await checkUnreadMessage();
+  var dateDiff = (Date.now() - dateTime) / (1000 * 60 * 60);
+  return dateDiff >= 0 && dateDiff <= 2;
+}
 
-            if (response) {
-              if (LIST_ACTIVE.length > 0) {
-                var messages = await getMain();
-                if (messages) {
-                  await checkMessage(messages);
-                }
-              }
-            }
+function isCurrentMonitorRun(runId) {
+  return ON && runId === MONITOR_RUN_ID;
+}
 
+function stopLoop() {
+  ON = false;
+  MONITOR_RUN_ID += 1;
+  MONITOR_START_PROMISE = null;
+  MONITOR_LOOP_ACTIVE = false;
+}
+
+function storeMonitorStopped() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({
+      [ACTIVE]: {
+        on: false,
+        date_time: Date.now()
+      }
+    }, () => {
+      var error = chrome.runtime.lastError;
+
+      if (error) {
+        reject(new Error(error.message || "Não foi possível salvar o estado do monitor."));
+        return;
+      }
+
+      resolve(true);
+    });
+  });
+}
+
+async function stopLoopAndPersist() {
+  stopLoop();
+
+  try {
+    await storeMonitorStopped();
+  } catch (error) {
+    console.warn("Não foi possível persistir o encerramento do monitor.", error);
+  }
+}
+
+async function runMonitorLoop(runId) {
+  try {
+    while (isCurrentMonitorRun(runId)) {
+      var activeState = await readStoredMonitorState();
+      if (!isCurrentMonitorRun(runId)) break;
+
+      if (!isStoredMonitorActive(activeState)) {
+        await stopLoopAndPersist();
+        break;
+      }
+
+      var observed = await observeContacts();
+      if (!isCurrentMonitorRun(runId)) break;
+
+      if (observed) {
+        var response = await checkUnreadMessage();
+        if (!isCurrentMonitorRun(runId)) break;
+
+        if (response && LIST_ACTIVE.length > 0) {
+          var messages = await getMain();
+          if (!isCurrentMonitorRun(runId)) break;
+
+          if (messages) {
+            await checkMessage(messages);
+            if (!isCurrentMonitorRun(runId)) break;
           }
-
-          await wait(10000);
         }
       }
 
+      await wait(10000);
     }
-  });
+  } catch (error) {
+    if (isCurrentMonitorRun(runId)) {
+      console.warn("O monitoramento foi interrompido.", error);
+      await stopLoopAndPersist();
+    }
+  } finally {
+    if (runId === MONITOR_RUN_ID) {
+      MONITOR_LOOP_ACTIVE = false;
+    }
+  }
+}
+
+async function initializeMonitorRun(runId) {
+  try {
+    var activeState = await readStoredMonitorState();
+
+    if (!isCurrentMonitorRun(runId) || !isStoredMonitorActive(activeState)) {
+      if (runId === MONITOR_RUN_ID) ON = false;
+      return false;
+    }
+
+    var hasActiveRecords = await prepareList();
+
+    if (!isCurrentMonitorRun(runId) || !hasActiveRecords) {
+      if (runId === MONITOR_RUN_ID) ON = false;
+      return false;
+    }
+
+    MONITOR_LOOP_ACTIVE = true;
+    void runMonitorLoop(runId);
+    return true;
+  } catch (error) {
+    if (runId === MONITOR_RUN_ID) {
+      ON = false;
+      MONITOR_LOOP_ACTIVE = false;
+    }
+
+    console.warn("Não foi possível iniciar o monitoramento.", error);
+    return false;
+  } finally {
+    if (runId === MONITOR_RUN_ID) {
+      MONITOR_START_PROMISE = null;
+    }
+  }
+}
+
+function startLoop() {
+  if (ON && MONITOR_START_PROMISE) {
+    return MONITOR_START_PROMISE;
+  }
+
+  if (ON && MONITOR_LOOP_ACTIVE) {
+    return Promise.resolve(true);
+  }
+
+  ON = true;
+  var runId = ++MONITOR_RUN_ID;
+  var startPromise = initializeMonitorRun(runId);
+
+  MONITOR_START_PROMISE = startPromise;
+  return startPromise;
 }
 
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === "ON") {
-
-    ON = true;
-
-    startLoop();
-
-    sendResponse({ ok: true });
-  } else {
-    if (msg?.type === "OFF") {
-      ON = false;
-    }
+    void (async () => {
+      var started = await startLoop();
+      sendResponse({ ok: started });
+    })();
+    return true;
   }
+
+  if (msg?.type === "OFF") {
+    stopLoop();
+    sendResponse({ ok: true });
+  }
+
+  return undefined;
 });
 
 
@@ -667,9 +792,8 @@ function sanitazeString(string) {
 $(document).ready(function () {
   const url = new URL(window.location.href);
   const monitor = url.searchParams.get("monitor");
-  if (monitor) {
-    ON = true;
-    startLoop();
+  if (monitor === "ON" && !ON) {
+    void startLoop();
   }
 });
 
