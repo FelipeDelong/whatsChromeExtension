@@ -2,6 +2,12 @@ var LIST_NAME = "list";
 var ACTIVE = "active";
 var THEME_NAME = "theme";
 var THEME_PATH = "assets/css/themes";
+var THEME_FILES = new Set([
+    "default.css",
+    "dark-blue.css",
+    "light.css",
+    "purple.css",
+]);
 var LIST_ACTIVE = [];
 
 function applyTheme(themeFile) {
