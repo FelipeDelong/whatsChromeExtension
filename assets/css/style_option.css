@@ -1,12 +1,25 @@
 body {
-    background-color: #141414;
-    color: white;
+    background-color: var(--option-background);
+    color: var(--theme-color-text);
     overflow-x: hidden;
 }
 
+.divbtnTheme {
+    background-color: var(--option-floating-button-panel-background);
+    border: solid 1px var(--theme-color-border);
+    border-radius: 10px;
+    position: fixed;
+    padding: .2rem;
+    height: 4rem;
+    right: .5rem;
+    top: 1rem;
+    box-sizing: border-box;
+    box-shadow: 0.7px 0.7px 0.7px 0.7px var(--theme-color-shadow);
+}
+
 .divbtnAdd {
-    background-color: #2A2A2A;
-    border: solid 1px white;
+    background-color: var(--option-floating-button-panel-background);
+    border: solid 1px var(--theme-color-border);
     border-radius: 10px;
     position: fixed;
     padding: .2rem;
@@ -14,27 +27,27 @@ body {
     right: .5rem;
     bottom: 1rem;
     box-sizing: border-box;
-    box-shadow: 0.7px 0.7px 0.7px 0.7px white;
+    box-shadow: 0.7px 0.7px 0.7px 0.7px var(--theme-color-shadow);
 }
 
 .btnAdd {
-    color: white;
+    color: var(--theme-color-text-inverse);
     font-size: medium;
-    background-color: #E50091;
+    background-color: var(--option-add-button-background);
 }
 
 .btnAdd:hover {
-    background-color: #530034;
+    background-color: var(--option-add-button-background-hover);
 }
 
 .btnSave {
-    color: white;
+    color: var(--theme-color-text-inverse);
     font-size: medium;
-    background-color: #1E7619;
+    background-color: var(--option-save-button-background);
 }
 
 .btnSave:hover {
-    background-color: #0F3E0D;
+    background-color: var(--option-save-button-background-hover);
 }
 
 
@@ -46,7 +59,7 @@ body {
 }
 
 .important {
-    color: #E50091;
+    color: var(--theme-color-important);
 }
 
 
@@ -63,37 +76,37 @@ body {
     width: 3rem;
     text-align: center;
     font-size: x-large;
-    color: white;
-    background-color: #3D3D3D;
-    border: solid 1px white;
+    color: var(--theme-color-text);
+    background-color: var(--option-card-background);
+    border: solid 1px var(--theme-color-border);
     border-radius: 10px;
 }
 
 .card {
     margin: 1rem;
     min-height: 13rem;
-    color: white;
-    border: solid 1px white;
+    color: var(--theme-color-text);
+    border: solid 1px var(--theme-color-border);
     border-radius: 20px;
-    background-color: #3D3D3D;
+    background-color: var(--option-card-background);
     box-sizing: border-box;
-    box-shadow: 1px 1px 1px 0.5px white;
+    box-shadow: 1px 1px 1px 0.5px var(--theme-color-shadow);
 }
 
 .off {
-    background-color: #1E1E1E;
-    color: #999999;
-    border-color: #999999;
-    box-shadow: 0px 0px 0px 0px #999999;
+    background-color: var(--option-card-off-background);
+    color: var(--theme-color-text-muted);
+    border-color: var(--theme-color-border-muted);
+    box-shadow: 0px 0px 0px 0px var(--theme-color-shadow-muted);
 }
 
 .offBorder {
-    border-color: #999999 !important;
-    box-shadow: 0px 0px 0px 0px #999999 !important;
+    border-color: var(--theme-color-border-muted) !important;
+    box-shadow: 0px 0px 0px 0px var(--theme-color-shadow-muted) !important;
 }
 
 .offLeftBorder {
-    border-left: solid 1px #999999 !important;
+    border-left: solid 1px var(--theme-color-border-muted) !important;
 }
 
 .divSubtitle {
@@ -101,11 +114,11 @@ body {
     left: 0px;
     top: -1.5rem;
     height: 3rem;
-    background-color: #530034;
-    border: solid 1px white;
+    background-color: var(--option-subtitle-background);
+    border: solid 1px var(--theme-color-border);
     border-radius: 10px;
     box-sizing: border-box;
-    box-shadow: .5px .5px .5px 0.5px white;
+    box-shadow: .5px .5px .5px 0.5px var(--theme-color-shadow);
 }
 
 .subtitle {
@@ -117,7 +130,6 @@ body {
     height: 3rem;
     padding-left: 2rem;
     padding-top: 0.2rem;
-    /* color: white; */
     font-weight: bolder;
     font-size: 1.3rem;
 }
@@ -126,7 +138,6 @@ body {
     height: 2rem;
     padding-left: 1rem;
     padding-top: 0.2rem;
-    /* color: white; */
     font-weight: bolder;
     font-size: 1.1rem;
 }
@@ -138,10 +149,10 @@ body {
     margin-top: 1rem;
     margin-left: 1rem;
     margin-bottom: 1.5rem;
-    border-left: solid 1px white;
+    border-left: solid 1px var(--theme-color-border);
     /* Firefox */
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, .35) transparent;
+    scrollbar-color: var(--theme-color-scrollbar-thumb) var(--theme-color-scrollbar-track);
 }
 
 .subcard2 {
@@ -151,10 +162,10 @@ body {
     margin-top: 1rem;
     margin-left: 1rem;
     margin-bottom: 1.5rem;
-    border-left: solid 1px white;
+    border-left: solid 1px var(--theme-color-border);
     /* Firefox */
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, .35) transparent;
+    scrollbar-color: var(--theme-color-scrollbar-thumb) var(--theme-color-scrollbar-track);
 }
 
 .subcard::-webkit-scrollbar {
@@ -162,17 +173,16 @@ body {
 }
 
 .subcard::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, .35);
+    background: var(--theme-color-scrollbar-thumb);
     border-radius: 999px;
 }
 
 .subcard::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--theme-color-scrollbar-track);
 }
 
 
 .text1 {
-    /* color: white; */
     padding-left: 1rem;
     padding-top: .3rem;
     padding-bottom: .3rem;
@@ -181,51 +191,50 @@ body {
 }
 
 .text2 {
-    /* color: white; */
     padding-left: 1rem;
     padding-right: 0.5rem;
     padding-top: .3rem;
     padding-bottom: .3rem;
-    border: solid 1px white;
+    border: solid 1px var(--theme-color-border);
     border-radius: 5px;
     margin-left: 1rem;
     max-width: 85%;
     box-sizing: border-box;
-    box-shadow: .7px .7px .7px 0.5px white;
+    box-shadow: .7px .7px .7px 0.5px var(--theme-color-shadow);
 }
 
 
 .btnEdit {
-    color: white;
+    color: var(--theme-color-text-inverse);
     width: 10rem;
     margin: 1rem;
-    background-color: #530034;
+    background-color: var(--option-button-background);
 }
 
 .btnEdit:hover {
-    background-color: #E50091;
+    background-color: var(--option-button-background-hover);
 }
 
 .btnActive {
-    color: white;
+    color: var(--theme-color-text-inverse);
     margin: 1rem;
     width: 10rem;
-    background-color: #530034;
+    background-color: var(--option-button-background);
 }
 
 .btnActive:hover {
-    background-color: #E50091;
+    background-color: var(--option-button-background-hover);
 }
 
 .btnDelete {
-    color: white;
+    color: var(--theme-color-text-inverse);
     margin: 1rem;
     width: 10rem;
-    background-color: #530034;
+    background-color: var(--option-button-background);
 }
 
 .btnDelete:hover {
-    background-color: #E50091;
+    background-color: var(--option-button-background-hover);
 }
 
 .instructions {
@@ -234,6 +243,6 @@ body {
 
 .group-list-panel {
     margin: 2rem 5rem 5rem;
-    background-color: #292929;
+    background-color: var(--option-panel-background);
     border-radius: 20px;
 }

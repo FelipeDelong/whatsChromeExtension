@@ -1,5 +1,13 @@
 var LIST_NAME = "list";
 var ACTIVE = "active";
+var THEME_NAME = "theme";
+var THEME_PATH = "assets/css/themes";
+var THEME_FILES = new Set([
+    "default.css",
+    "dark-blue.css",
+    "light.css",
+    "purple.css",
+]);
 var WHATS_URL = "https://web.whatsapp.com/";
 var WHATS_URL_PATTERN = "https://web.whatsapp.com/*";
 var COMMAND_RETRY_ATTEMPTS = 60;
@@ -10,6 +18,13 @@ var LIST = [];
 var LIST_ACTIVE = [];
 var monitorOperationInProgress = false;
 
+function applyTheme(themeFile) {
+    var fileName = THEME_FILES.has(themeFile) ? themeFile : "default.css";
+    $("#themeStylesheet").attr("href", THEME_PATH + "/" + fileName);
+}
+
+async function openOrFocusWhats(status) {
+    const tabs = await chrome.tabs.query({ url: "https://web.whatsapp.com/*" });
 function wait(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -66,6 +81,14 @@ function finishLoading() {
     $("#screen2").prop("hidden", false);
 }
 
+$(document).ready(async function () {
+    chrome.storage.local.get([THEME_NAME], (res) => {
+        applyTheme(res.theme);
+    });
+
+    id_tab = await openOrFocusWhats(false);
+    checkMonitor(id_tab);
+});
 function renderOperationError() {
     $("#hyperlink").html(
         '<p class="warning" role="alert">Não foi possível atualizar o monitoramento.</p>'

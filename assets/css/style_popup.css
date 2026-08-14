@@ -3,8 +3,8 @@ body {
     height: 15rem;
     max-height: 20rem;
     overflow-y: auto;
-    background-color: #1E1E1E;
-    color: white;
+    background-color: var(--popup-background);
+    color: var(--theme-color-text);
 }
 
 .div_configuration {
@@ -18,30 +18,30 @@ body {
 }
 
 .btnWhats {
-    background-color: #E50091;
+    background-color: var(--popup-button-background);
 }
 
 .btnWhats:hover {
-    background-color: #530034;
+    background-color: var(--popup-button-background-hover);
 }
 
 .btnWhatsOff {
-    background-color: #6E6E6E;
+    background-color: var(--popup-button-off-background);
 }
 
 .btnWhatsOff:hover {
-    background-color: #2A2A2A;
+    background-color: var(--popup-button-off-background-hover);
 }
 
 .hyperlinkWhats{
     font-size: 2rem;
-    color: white;
+    color: var(--theme-color-text);
     cursor: pointer;
 }
 
 .hyperlinkWhatsOff{
     font-size: 2rem;
-    color: white;
+    color: var(--theme-color-text);
     cursor: pointer;
 }
 
@@ -49,11 +49,11 @@ body {
     height: 3rem;
     font-size: x-large;
     font-weight: bolder;
-    background-color: #530034;
-    border: solid 1px white;
+    background-color: var(--popup-title-background);
+    border: solid 1px var(--theme-color-border);
     border-radius: 10px;
     box-sizing: border-box;
-    box-shadow: .5px .5px .5px 0.5px white;
+    box-shadow: .5px .5px .5px 0.5px var(--theme-color-shadow);
 }
 
 .subtitle {
@@ -72,31 +72,35 @@ body {
 
 .text {
     font-size: 1.3rem;
-    color: #6E6E6E;
+    color: var(--theme-color-text-secondary);
 }
 
 .text2 {
     font-size: 1.1rem;
-    color: white;
+    color: var(--theme-color-text);
 }
 
 .text.bold {
     font-weight: bolder;
-    color: white;
+    color: var(--theme-color-text);
 }
 
 .hyperlink {
-    color: white;
+    color: var(--theme-color-text);
+}
+
+.gear {
+    fill: var(--theme-color-text);
 }
 
 .config:hover .hyperlink {
-    color: #E50091;
+    color: var(--theme-color-primary);
     text-decoration: underline;
     cursor: pointer !important;
 }
 
 .config:hover .gear{
-    fill: #E50091;
+    fill: var(--theme-color-primary);
 }
 
 .warning {

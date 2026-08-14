@@ -2,25 +2,50 @@
     overflow-x: hidden !important;
 }
 
+.swal2-popup {
+    background: var(--modal-background) !important;
+    color: var(--modal-text) !important;
+}
+
+.swal2-title,
+.swal2-html-container {
+    color: var(--modal-text) !important;
+}
+
+.swal2-confirm {
+    background-color: var(--modal-confirm-button-background) !important;
+    color: var(--theme-color-text-inverse) !important;
+}
+
+.swal2-cancel {
+    background-color: var(--modal-cancel-button-background) !important;
+    color: var(--theme-color-text-inverse) !important;
+}
+
+.swal2-container.swal2-backdrop-show,
+.swal2-container.swal2-noanimation {
+    background: var(--modal-backdrop-background) !important;
+}
+
 .hiddenCard {
     height: 2rem;
 }
 
 .btnAdd2 {
     font-weight: bold;
-    background-color: #1C719B;
-    color: white;
+    background-color: var(--modal-add-button-background);
+    color: var(--theme-color-text-inverse);
 }
 
 .btnAdd2:hover {
-    background-color: #175676;
+    background-color: var(--modal-add-button-background-hover);
 }
 
 .modalCard {
     overflow-y: auto;
     min-height: 4rem;
     max-height: 20vh;
-    border: 1px solid white;
+    border: 1px solid var(--theme-color-border);
     border-radius: 10px;
 
     padding: 0.5rem;
@@ -28,14 +53,14 @@
 
     /* Firefox */
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, .35) transparent;
+    scrollbar-color: var(--theme-color-scrollbar-thumb) var(--theme-color-scrollbar-track);
 }
 
 .modalCard2 {
     overflow-y: auto;
     min-height: 1rem;
     max-height: 15vh;
-    border: 1px solid white;
+    border: 1px solid var(--theme-color-border);
     border-radius: 10px;
 
     padding: 0.5rem;
@@ -43,7 +68,7 @@
 
     /* Firefox */
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, .35) transparent;
+    scrollbar-color: var(--theme-color-scrollbar-thumb) var(--theme-color-scrollbar-track);
 }
 
 .modalCard::-webkit-scrollbar {
@@ -51,16 +76,16 @@
 }
 
 .modalCard::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, .35);
+    background: var(--theme-color-scrollbar-thumb);
     border-radius: 999px;
 }
 
 .modalCard::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--theme-color-scrollbar-track);
 }
 
 .btnExclude {
-    color: #E50091;
+    color: var(--modal-exclude-button-color);
     cursor: pointer;
     font-weight: bold;
 }
