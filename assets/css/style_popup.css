@@ -117,9 +117,10 @@ body {
     top: 5rem;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
-  }
-  .loader::after {
-    content: '';  
+}
+
+.loader::after {
+    content: "";
     box-sizing: border-box;
     position: absolute;
     left: 50%;
@@ -130,13 +131,14 @@ body {
     border-radius: 50%;
     border: 5px solid;
     border-color: #E50091 transparent;
-  }
-  
-  @keyframes rotation {
+}
+
+@keyframes rotation {
     0% {
-      transform: rotate(0deg);
+        transform: rotate(0deg);
     }
+
     100% {
-      transform: rotate(360deg);
+        transform: rotate(360deg);
     }
-  } 
+}
