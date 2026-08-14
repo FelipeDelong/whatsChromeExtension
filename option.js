@@ -5,6 +5,8 @@ var KEYWORD_LIST_TEMP = [];
 var RESPONSE_LIST_TEMP = [];
 var DATE_LIST_TEMP = [];
 var TIME_LIST_TEMP = [];
+var THEME_NAME = "theme";
+var THEME_PATH = "assets/css/themes";
 
 function showRangeValidation(message, selector) {
     Swal.showValidationMessage(message);
@@ -155,6 +157,70 @@ async function loadMonitoringFormHtml() {
         });
         return null;
     }
+}
+
+function formatThemeLabel(fileName) {
+    var labels = {
+        "default.css": "Padrão",
+        "dark-blue.css": "Azul escuro",
+        "light.css": "Claro",
+        "purple.css": "Roxo",
+    };
+
+    return labels[fileName] || String(fileName)
+        .replace(/\.css$/i, "")
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, function (letter) {
+            return letter.toUpperCase();
+        });
+}
+
+function getThemeFiles() {
+    return new Promise(function (resolve) {
+        if (!chrome.runtime.getPackageDirectoryEntry) {
+            resolve(["default.css"]);
+            return;
+        }
+
+        chrome.runtime.getPackageDirectoryEntry(function (root) {
+            root.getDirectory(THEME_PATH, {}, function (directory) {
+                var reader = directory.createReader();
+                var entries = [];
+
+                function readEntries() {
+                    reader.readEntries(function (results) {
+                        if (results.length === 0) {
+                            var themeFiles = entries
+                                .filter(function (entry) {
+                                    return entry.isFile && /\.css$/i.test(entry.name);
+                                })
+                                .map(function (entry) {
+                                    return entry.name;
+                                })
+                                .sort();
+
+                            resolve(themeFiles.length > 0 ? themeFiles : ["default.css"]);
+                            return;
+                        }
+
+                        entries = entries.concat(Array.from(results));
+                        readEntries();
+                    }, function () {
+                        resolve(["default.css"]);
+                    });
+                }
+
+                readEntries();
+            }, function () {
+                resolve(["default.css"]);
+            });
+        });
+    });
+}
+
+function applyTheme(themeFile) {
+    var fileName = themeFile || "default.css";
+    $("#themeStylesheet").attr("href", THEME_PATH + "/" + fileName);
 }
 
 //renderize the Main list of cards
@@ -489,13 +555,39 @@ function modal(id = false) {
     })();
 }
 
+
+async function renderizeThemeList(theme = null) {
+    var themeFiles = await getThemeFiles();
+    var selectedTheme = themeFiles.includes(theme) ? theme : "default.css";
+    var html = "";
+
+    $.each(themeFiles, function (key, fileName) {
+        var selected = fileName === selectedTheme ? " selected" : "";
+
+        html += `<option value="` + escapeHtml(fileName) + `"` + selected + `>`
+            + escapeHtml(formatThemeLabel(fileName))
+            + `</option>`;
+    });
+
+    $("#selectTheme").html(html);
+    applyTheme(selectedTheme);
+}
+
 //check if there's a list on memory
 $(document).ready(function () {
-    chrome.storage.local.get([LIST_NAME], (res) => {
+    chrome.storage.local.get([LIST_NAME, THEME_NAME], (res) => {
         console.log(res.list);
+        renderizeThemeList(res.theme);
         renderizeMainList(res.list);
     });
 
+});
+
+$(document).on("change", "#selectTheme", function () {
+    var selectedTheme = $(this).val() || "default.css";
+
+    applyTheme(selectedTheme);
+    chrome.storage.local.set({ [THEME_NAME]: selectedTheme });
 });
 
 

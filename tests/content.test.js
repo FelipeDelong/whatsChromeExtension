@@ -11,6 +11,7 @@ const CONTENT_SCRIPT = fs.readFileSync(
 function createHarness(initialStorage = {}, runtimeHandler = null) {
   const storage = { ...initialStorage };
   const runtimeMessages = [];
+  const runtimeListeners = [];
 
   function jquery() {
     return {
@@ -38,7 +39,9 @@ function createHarness(initialStorage = {}, runtimeHandler = null) {
     runtime: {
       lastError: null,
       onMessage: {
-        addListener() {}
+        addListener(listener) {
+          runtimeListeners.push(listener);
+        }
       },
       sendMessage(message, callback) {
         runtimeMessages.push(message);
@@ -99,7 +102,7 @@ function createHarness(initialStorage = {}, runtimeHandler = null) {
 
   vm.runInContext(CONTENT_SCRIPT, context, { filename: "content.js" });
 
-  return { context, document, runtimeMessages, storage };
+  return { context, document, runtimeListeners, runtimeMessages, storage };
 }
 
 function currentMessage(text, overrides = {}) {
@@ -691,4 +694,110 @@ test("checkUnreadMessage skips entries without a contact", async () => {
 
   assert.equal(Boolean(await context.checkUnreadMessage()), false);
   assert.equal(searches, 0);
+});
+
+test("duplicate ON commands start a single monitoring loop", async () => {
+  const activeRecord = {
+    ...matchingRule(),
+    active: true
+  };
+  const { context, runtimeListeners } = createHarness({
+    active: { on: true, date_time: Date.now() },
+    list: [activeRecord]
+  });
+  const listener = runtimeListeners[0];
+  let loopStarts = 0;
+
+  context.runMonitorLoop = async () => {
+    loopStarts += 1;
+  };
+
+  function dispatchOn() {
+    return new Promise((resolve) => {
+      assert.equal(listener({ type: "ON" }, {}, resolve), true);
+    });
+  }
+
+  const responses = await Promise.all([dispatchOn(), dispatchOn()]);
+
+  assert.deepEqual(responses.map((response) => response.ok), [true, true]);
+  assert.equal(loopStarts, 1);
+});
+
+test("OFF acknowledges the command and invalidates the current run", () => {
+  const { context, runtimeListeners } = createHarness();
+  const listener = runtimeListeners[0];
+  let response = null;
+
+  context.ON = true;
+  context.MONITOR_RUN_ID = 4;
+
+  assert.equal(listener({ type: "OFF" }, {}, (value) => {
+    response = value;
+  }), undefined);
+  assert.equal(response.ok, true);
+  assert.equal(context.ON, false);
+  assert.equal(context.MONITOR_RUN_ID, 5);
+  assert.equal(context.isCurrentMonitorRun(4), false);
+});
+
+test("an old loop cannot resume after OFF followed by ON", async () => {
+  const { context } = createHarness();
+  let releaseObservation;
+  let unreadChecks = 0;
+
+  context.ON = true;
+  context.MONITOR_RUN_ID = 1;
+  context.readStoredMonitorState = async () => ({
+    on: true,
+    date_time: Date.now()
+  });
+  context.observeContacts = () => new Promise((resolve) => {
+    releaseObservation = resolve;
+  });
+  context.checkUnreadMessage = async () => {
+    unreadChecks += 1;
+    return true;
+  };
+
+  const oldLoop = context.runMonitorLoop(1);
+  await new Promise((resolve) => setImmediate(resolve));
+
+  context.stopLoop();
+  context.ON = true;
+  context.MONITOR_RUN_ID += 1;
+  releaseObservation(true);
+
+  await oldLoop;
+  assert.equal(unreadChecks, 0);
+  assert.equal(context.isCurrentMonitorRun(1), false);
+});
+
+test("startLoop fails safely when the persisted state is missing", async () => {
+  const { context } = createHarness({
+    list: [{ ...matchingRule(), active: true }]
+  });
+
+  assert.equal(await context.startLoop(), false);
+  assert.equal(context.ON, false);
+  assert.equal(context.MONITOR_LOOP_ACTIVE, false);
+});
+
+test("a loop failure persists the stopped monitor state", async () => {
+  const { context, storage } = createHarness({
+    active: { on: true, date_time: Date.now() }
+  });
+
+  context.ON = true;
+  context.MONITOR_RUN_ID = 1;
+  context.readStoredMonitorState = async () => storage.active;
+  context.observeContacts = async () => {
+    throw new Error("WhatsApp DOM unavailable");
+  };
+
+  await context.runMonitorLoop(1);
+
+  assert.equal(context.ON, false);
+  assert.equal(storage.active.on, false);
+  assert.equal(context.MONITOR_LOOP_ACTIVE, false);
 });

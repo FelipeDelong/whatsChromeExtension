@@ -456,3 +456,119 @@ div.swal2-popup.monitoring-modal {
         width: 100%;
     }
 }
+
+/* Theme variables are declared by the selected theme stylesheet. */
+div.swal2-popup.monitoring-modal {
+    border-color: var(--theme-color-border, #343a40);
+    background: var(--modal-background, #19191a) !important;
+    color: var(--modal-text, #e1e1e1) !important;
+}
+
+.monitoring-modal .swal2-title,
+.monitoring-modal div.swal2-html-container {
+    color: var(--modal-text, #e7ebef);
+}
+
+.monitor-form__identity,
+.repeatable-field,
+.schedule-field {
+    border-color: var(--theme-color-border, #3d444c);
+    background: var(--option-card-background, #202429);
+}
+
+.form-label,
+.form-field label,
+.schedule-field legend {
+    color: var(--theme-color-text, #f5f7fa);
+}
+
+.schedule-field legend span,
+.form-hint,
+.schedule-field__connector,
+.form-field--compact label {
+    color: var(--theme-color-text-secondary, #aeb5bd);
+}
+
+.required-indicator {
+    color: var(--theme-color-important, #ff4dbd);
+}
+
+.monitor-form .form-control {
+    border-color: var(--theme-color-border-muted, #59616a);
+    background: var(--option-background, #121518);
+    color: var(--theme-color-text, #f5f7fa);
+}
+
+.monitor-form .form-control::placeholder {
+    color: var(--theme-color-text-secondary, #89919a);
+}
+
+.monitor-form .form-control:hover {
+    border-color: var(--theme-color-border, #7b8490);
+}
+
+.monitor-form .form-control:focus-visible {
+    border-color: var(--theme-color-primary, #ff4dbd);
+}
+
+.btnAdd2 {
+    border-color: var(--modal-add-button-background, #247da7);
+    background: var(--modal-add-button-background, #1c719b);
+    color: var(--theme-color-text-inverse, #fff);
+}
+
+.btnAdd2:hover {
+    border-color: var(--modal-add-button-background-hover, #3198c9);
+    background: var(--modal-add-button-background-hover, #175f82);
+}
+
+.modalCard,
+.modalCard2,
+.modal-list {
+    border-color: var(--theme-color-border, #464d55);
+    background: var(--option-background, #16191c);
+    scrollbar-color: var(--theme-color-scrollbar-thumb, #59616a)
+        var(--theme-color-scrollbar-track, transparent);
+}
+
+.modal-list:empty::before,
+.modal-list__empty {
+    color: var(--theme-color-text-muted, #8f979f);
+}
+
+.modal-list__item {
+    border-color: var(--theme-color-border, #3a4148);
+    background: var(--option-card-background, #24292f);
+}
+
+.modal-list__value {
+    color: var(--theme-color-text, #edf0f3);
+}
+
+.btnExclude,
+.modal-list__remove,
+.action-remove-contact,
+.action-remove-keyword,
+.action-remove-response,
+.action-remove-date,
+.action-remove-time {
+    border-color: var(--theme-color-danger, #9f414a);
+    background: var(--modal-exclude-button-color, #62252b);
+    color: var(--theme-color-text-inverse, #fff);
+}
+
+.btnExclude:hover,
+.modal-list__remove:hover {
+    border-color: var(--theme-color-danger, #cc5963);
+    background: var(--theme-color-danger, #812f37);
+}
+
+.monitoring-modal div.swal2-actions .swal2-confirm {
+    background: var(--modal-confirm-button-background, #e50091) !important;
+    color: var(--theme-color-text-inverse, #fff) !important;
+}
+
+.monitoring-modal div.swal2-actions .swal2-cancel {
+    background: var(--modal-cancel-button-background, #6e6e6e) !important;
+    color: var(--theme-color-text-inverse, #fff) !important;
+}

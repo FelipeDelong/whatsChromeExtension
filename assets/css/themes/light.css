@@ -1,0 +1,75 @@
+:root {
+    /*
+     * Tema light.
+     * Para criar outro tema, copie este arquivo e mantenha os mesmos nomes
+     * de variaveis, alterando apenas os valores das cores.
+     */
+
+    /* Base */
+    --theme-color-background: #FAF8F3;
+    --theme-color-background-alt: #FFFFFF;
+    --theme-color-surface: #F0E8DA;
+    --theme-color-surface-alt: #F6F1E8;
+    --theme-color-card: #FFFFFF;
+    --theme-color-disabled-surface: #EFEFEF;
+
+    /* Texto */
+    --theme-color-text: #1F1F1F;
+    --theme-color-text-muted: #6A645E;
+    --theme-color-text-secondary: #6F665D;
+    --theme-color-text-inverse: #1F1F1F;
+
+    /* Bordas, sombras e scroll */
+    --theme-color-border: #D8CBB8;
+    --theme-color-border-muted: #CFC7BC;
+    --theme-color-shadow: rgba(72, 58, 41, .22);
+    --theme-color-shadow-muted: rgba(72, 58, 41, .12);
+    --theme-color-scrollbar-thumb: rgba(142, 124, 101, .45);
+    --theme-color-scrollbar-track: transparent;
+
+    /* Marca e destaques */
+    --theme-color-primary: #D7BFA3;
+    --theme-color-primary-hover: #B99A78;
+    --theme-color-accent: #C9AD8C;
+    --theme-color-accent-hover: #A98460;
+    --theme-color-important: #7A4F2B;
+
+    /* Acoes */
+    --theme-color-success: #719E6D;
+    --theme-color-success-hover: #679363;
+    --theme-color-info: #8CA7B8;
+    --theme-color-info-hover: #6E8EA2;
+    --theme-color-danger: #9B3E2E;
+    --theme-color-disabled: #B8B0A7;
+    --theme-color-disabled-hover: #968C82;
+
+    /* Aliases por tela/componente */
+    --popup-background: var(--theme-color-background-alt);
+    --popup-title-background: var(--theme-color-accent);
+    --popup-button-background: var(--theme-color-primary);
+    --popup-button-background-hover: var(--theme-color-primary-hover);
+    --popup-button-off-background: var(--theme-color-disabled);
+    --popup-button-off-background-hover: var(--theme-color-disabled-hover);
+
+    --option-background: var(--theme-color-background);
+    --option-floating-button-panel-background: var(--theme-color-surface);
+    --option-card-background: var(--theme-color-card);
+    --option-card-off-background: var(--theme-color-disabled-surface);
+    --option-panel-background: var(--theme-color-surface-alt);
+    --option-subtitle-background: var(--theme-color-accent);
+    --option-button-background: var(--theme-color-accent);
+    --option-button-background-hover: var(--theme-color-accent-hover);
+    --option-add-button-background: var(--theme-color-primary);
+    --option-add-button-background-hover: var(--theme-color-primary-hover);
+    --option-save-button-background: var(--theme-color-success);
+    --option-save-button-background-hover: var(--theme-color-success-hover);
+
+    --modal-add-button-background: var(--theme-color-info);
+    --modal-add-button-background-hover: var(--theme-color-info-hover);
+    --modal-exclude-button-color: var(--theme-color-danger);
+    --modal-background: #FFFFFF;
+    --modal-text: var(--theme-color-text);
+    --modal-confirm-button-background: var(--theme-color-primary);
+    --modal-cancel-button-background: var(--theme-color-disabled);
+    --modal-backdrop-background: rgba(72, 58, 41, .28);
+}

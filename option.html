@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="light dark">
     <title>WhatsApp Monitor</title>
 
     <script src="assets/js/jquery.js" defer></script>
@@ -14,6 +14,7 @@
     <script src="option.js" defer></script>
 
     <link rel="stylesheet" href="assets/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/themes/default.css" id="themeStylesheet">
     <link rel="stylesheet" href="assets/css/libs/sweetalert2.min.css">
     <link rel="stylesheet" href="assets/css/style_option.css">
     <link rel="stylesheet" href="assets/css/style_modal.css">
@@ -25,6 +26,11 @@
             <div class="app-heading">
                 <span class="app-heading__eyebrow">Configurações da extensão</span>
                 <h1 class="title">WhatsApp Web Monitor</h1>
+            </div>
+
+            <div class="theme-control">
+                <label for="selectTheme">Tema</label>
+                <select class="form-select" id="selectTheme"></select>
             </div>
 
             <div class="divbtnAdd app-actions" role="group" aria-label="Ações da configuração">

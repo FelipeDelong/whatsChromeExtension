@@ -4,15 +4,15 @@
 
 html {
     min-width: 20rem;
-    background: #111315;
-    color-scheme: dark;
+    background: var(--option-background, #111315);
+    color-scheme: light dark;
 }
 
 body {
     min-height: 100vh;
     margin: 0;
-    background: #111315;
-    color: #f5f7fa;
+    background: var(--option-background, #111315);
+    color: var(--theme-color-text, #f5f7fa);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     line-height: 1.5;
 }
@@ -26,8 +26,8 @@ input {
     position: sticky;
     z-index: 20;
     top: 0;
-    border-bottom: 1px solid #30353b;
-    background: rgba(17, 19, 21, .96);
+    border-bottom: 1px solid var(--theme-color-border, #30353b);
+    background: var(--option-floating-button-panel-background, rgba(17, 19, 21, .96));
 }
 
 .app-header__content {
@@ -507,5 +507,162 @@ input {
     .card > .col-12:nth-child(2) > .row {
         grid-template-columns: 1fr;
         padding-inline-start: 1rem;
+    }
+}
+
+/* Theme variables are declared by the selected theme stylesheet. */
+.theme-control {
+    display: grid;
+    min-width: min(12rem, 100%);
+    gap: .25rem;
+    color: var(--theme-color-text, #f5f7fa);
+}
+
+.theme-control label {
+    color: var(--theme-color-text-secondary, #aeb5bd);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.theme-control .form-select {
+    min-height: 2.5rem;
+    border-color: var(--theme-color-border, #59616a);
+    background-color: var(--option-card-background, #202429);
+    color: var(--theme-color-text, #f5f7fa);
+}
+
+.app-heading__eyebrow,
+.section-heading__eyebrow {
+    color: var(--theme-color-text-secondary, #c9a8bb);
+}
+
+.title,
+.section-heading h2,
+.subtitle {
+    color: var(--theme-color-text, #fff);
+}
+
+.instructions,
+.group-list-panel {
+    border-color: var(--theme-color-border, #30353b);
+    background: var(--option-panel-background, #1a1d21);
+    color: var(--theme-color-text, #f5f7fa);
+}
+
+.btnAdd {
+    border-color: var(--theme-color-border, #505760);
+    background: var(--option-add-button-background, #272b30);
+    color: var(--theme-color-text-inverse, #f5f7fa);
+}
+
+.btnAdd:hover {
+    border-color: var(--theme-color-border-muted, #7b8490);
+    background: var(--option-add-button-background-hover, #343940);
+}
+
+.btnSave {
+    border-color: var(--option-save-button-background, #e50091);
+    background: var(--option-save-button-background, #e50091);
+    color: var(--theme-color-text-inverse, #fff);
+}
+
+.btnSave:hover {
+    border-color: var(--option-save-button-background-hover, #bb0076);
+    background: var(--option-save-button-background-hover, #bb0076);
+}
+
+.instruction-step {
+    border-color: var(--theme-color-border, #343a40);
+    background: var(--option-card-background, #202429);
+}
+
+.important {
+    color: var(--theme-color-important, #ff4dbd);
+}
+
+.field-guide li {
+    border-inline-start-color: var(--theme-color-accent, #8a315f);
+    background: var(--option-background, #191c20);
+    color: var(--theme-color-text, #e1e5e9);
+}
+
+.instruction-step__note,
+.instructions__note {
+    color: var(--theme-color-text-secondary, #cfd4da);
+}
+
+.instructions__note {
+    border-color: var(--theme-color-border, #414850);
+    background: var(--option-background, #15181b);
+}
+
+#list:empty::before {
+    border-color: var(--theme-color-border-muted, #4a515a);
+    background: var(--option-card-off-background, #16191c);
+    color: var(--theme-color-text-muted, #aeb5bd);
+}
+
+.card {
+    border-color: var(--theme-color-border, #3d444c);
+    background: var(--option-card-background, #202429);
+    color: var(--theme-color-text, #f5f7fa);
+}
+
+.off {
+    border-color: var(--theme-color-border-muted, #999);
+    background: var(--option-card-off-background, #1e1e1e);
+    color: var(--theme-color-text-muted, #999);
+}
+
+.offBorder {
+    border-color: var(--theme-color-border-muted, #999) !important;
+}
+
+.idCard {
+    border-color: var(--theme-color-border, #59616a);
+    background: var(--option-subtitle-background, #343940);
+    color: var(--theme-color-text, #fff);
+}
+
+.subtitle1,
+.subtitle2 {
+    color: var(--theme-color-text-secondary, #cbd1d7);
+}
+
+.text1,
+.subcard,
+.subcard2 {
+    border-color: var(--theme-color-border, #3a4148);
+    background: var(--option-background, #191c20);
+}
+
+.subcard,
+.subcard2 {
+    scrollbar-color: var(--theme-color-scrollbar-thumb, #59616a)
+        var(--theme-color-scrollbar-track, transparent);
+}
+
+.text2 {
+    background: var(--option-card-background, #252a30);
+}
+
+.btnEdit,
+.btnActive,
+.btnDelete {
+    background-color: var(--option-button-background, #530034);
+    color: var(--theme-color-text-inverse, #fff);
+}
+
+.btnEdit:hover,
+.btnActive:hover,
+.btnDelete:hover {
+    background-color: var(--option-button-background-hover, #e50091);
+}
+
+@media (max-width: 42rem) {
+    .theme-control {
+        width: 100%;
     }
 }
