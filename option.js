@@ -6,16 +6,162 @@ var RESPONSE_LIST_TEMP = [];
 var DATE_LIST_TEMP = [];
 var TIME_LIST_TEMP = [];
 
+function showRangeValidation(message, selector) {
+    Swal.showValidationMessage(message);
+    $(selector).trigger("focus");
+}
+
+function resetRangeValidation() {
+    if (typeof Swal.resetValidationMessage === "function") {
+        Swal.resetValidationMessage();
+    }
+}
+
+function isValidDateValue(value) {
+    var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+    if (!match) return false;
+
+    var year = Number(match[1]);
+    var month = Number(match[2]);
+    var day = Number(match[3]);
+    var date = new Date(year, month - 1, day, 12);
+
+    return date.getFullYear() === year
+        && date.getMonth() === month - 1
+        && date.getDate() === day;
+}
+
+function isValidTimeValue(value) {
+    return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(String(value || ""));
+}
+
+function escapeHtml(value) {
+    var characters = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+    };
+
+    return String(value).replace(/[&<>"']/g, function (character) {
+        return characters[character];
+    });
+}
+
+function normalizeTextList(list) {
+    var seen = new Set();
+
+    return list.map(function (value) {
+        return String(value).trim();
+    }).filter(function (value) {
+        if (value.length === 0 || seen.has(value)) {
+            return false;
+        }
+
+        seen.add(value);
+        return true;
+    });
+}
+
+function normalizeMonitoringRecord(record) {
+    var normalized = record && typeof record === "object" ? record : {};
+
+    return {
+        ...normalized,
+        contact_list: Array.isArray(normalized.contact_list) ? normalized.contact_list : [],
+        keyword_list: Array.isArray(normalized.keyword_list) ? normalized.keyword_list : [],
+        response_list: Array.isArray(normalized.response_list) ? normalized.response_list : [],
+        date_list: Array.isArray(normalized.date_list) ? normalized.date_list : [],
+        time_list: Array.isArray(normalized.time_list) ? normalized.time_list : [],
+    };
+}
+
+function showFormError(message, inputSelector) {
+    Swal.showValidationMessage(message);
+    $(inputSelector).trigger("focus");
+    return false;
+}
+
+function validateMonitoringForm(recordId = null) {
+    var group = $("#group").val().trim();
+    CONTACT_LIST_TEMP = normalizeTextList(CONTACT_LIST_TEMP);
+    KEYWORD_LIST_TEMP = normalizeTextList(KEYWORD_LIST_TEMP);
+    RESPONSE_LIST_TEMP = normalizeTextList(RESPONSE_LIST_TEMP);
+
+    if (!group) {
+        return showFormError("Informe o grupo ou contato do monitoramento", "#group");
+    }
+
+    var duplicateGroup = MAIN_LIST.some(function (item, index) {
+        return index !== recordId && String(item.group_name).trim() === group;
+    });
+
+    if (duplicateGroup) {
+        return showFormError("Já existe um monitoramento para esse grupo ou contato", "#group");
+    }
+
+    if (KEYWORD_LIST_TEMP.length === 0) {
+        return showFormError("Insira ao menos uma palavra-chave", "#input_keyWord");
+    }
+
+    if (RESPONSE_LIST_TEMP.length === 0) {
+        return showFormError("Insira ao menos uma resposta", "#input_response");
+    }
+
+    return { group };
+}
+
+function addTextValue(inputSelector, list, renderList) {
+    var value = $(inputSelector).val().trim();
+
+    if (!value) {
+        showFormError("Digite um texto para incluir na lista", inputSelector);
+        return;
+    }
+
+    var duplicateValue = list.some(function (item) {
+        return String(item).trim() === value;
+    });
+
+    if (duplicateValue) {
+        showFormError("Esse texto já foi incluído", inputSelector);
+        return;
+    }
+
+    $(inputSelector).val("");
+    list.push(value);
+    renderList();
+}
+
 //bring the html for the modal
 function loadHtmlJQ(path) {
     return $.get(path);
+}
+
+async function loadMonitoringFormHtml() {
+    try {
+        return await loadHtmlJQ(chrome.runtime.getURL("components/modal.html"));
+    } catch (error) {
+        console.error("Unable to load the monitoring form.", error);
+        await Swal.fire({
+            icon: "error",
+            title: "Não foi possível abrir o formulário",
+            text: "Recarregue a página e tente novamente.",
+            background: "#19191a",
+            color: "#e1e1e1",
+            confirmButtonText: "Fechar",
+            confirmButtonColor: "#E50091",
+        });
+        return null;
+    }
 }
 
 //renderize the Main list of cards
 function renderizeMainList(list = MAIN_LIST) {
     var html = ``;
 
-    MAIN_LIST = list;
+    MAIN_LIST = (Array.isArray(list) ? list : []).map(normalizeMonitoringRecord);
     console.log(MAIN_LIST);
 
     $.each(MAIN_LIST, function (key, value) {
@@ -38,7 +184,7 @@ function renderizeMainList(list = MAIN_LIST) {
         var contact_list = ``;
         if (value.contact_list.length > 0) {
             $.each(value.contact_list, function (key, value) {
-                contact_list += ` <div class="col-12 text2 ` + active_border + `"> ` + value + ` </div>`;
+                contact_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(value) + ` </div>`;
             });
         } else {
                 contact_list += ` <div class="col-12 text2 offBorder"> Todos os contatos </div>`;
@@ -47,12 +193,12 @@ function renderizeMainList(list = MAIN_LIST) {
 
         var keyword_list = ``;
         $.each(value.keyword_list, function (key, value) {
-            keyword_list += ` <div class="col-12 text2 ` + active_border + `"> ` + value + ` </div>`;
+            keyword_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(value) + ` </div>`;
         });
 
         var response_list = ``;
         $.each(value.response_list, function (key, value) {
-            response_list += ` <div class="col-12 text2 ` + active_border + `"> ` + value + ` </div>`;
+            response_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(value) + ` </div>`;
         });
 
         var date_list = ``;
@@ -62,7 +208,7 @@ function renderizeMainList(list = MAIN_LIST) {
                 var date1 = temp1[2] + "/" + temp1[1] + "/" + temp1[0];
                 var temp2 = value.date2.split('-');
                 var date2 = temp2[2] + "/" + temp2[1] + "/" + temp2[0];
-                date_list += ` <div class="col-12 text2 ` + active_border + `"> ` + date1 + ` - ` + date2 + ` </div>`;
+                date_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(date1) + ` - ` + escapeHtml(date2) + ` </div>`;
             });
         } else {
             date_list += ` <div class="col-12 text2 offBorder"> Todos as datas </div>`
@@ -71,7 +217,7 @@ function renderizeMainList(list = MAIN_LIST) {
         var time_list = ``;
         if (value.time_list.length > 0) {
             $.each(value.time_list, function (key, value) {
-                time_list += ` <div class="col-12 text2 ` + active_border + `"> ` + value.time1 + ` - ` + value.time2 + `</div>`;
+                time_list += ` <div class="col-12 text2 ` + active_border + `"> ` + escapeHtml(value.time1) + ` - ` + escapeHtml(value.time2) + `</div>`;
             });
         } else {
             time_list += ` <div class="col-12 text2 offBorder"> Todos os horários </div>`;
@@ -89,7 +235,7 @@ function renderizeMainList(list = MAIN_LIST) {
                                 <div class="col-2 d-flex align-items-center subtitle1">Grupo/Contato:</div>
                                 <div class="col-8">
                                     <div class="col-12 text1" style="text-align: center;">
-                                        ` + value.group_name + `
+                                        ` + escapeHtml(value.group_name) + `
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +309,7 @@ function renderizeList_contact() {
     var html = "";
     $.each(CONTACT_LIST_TEMP, function (key, value) {
         html += `<div class="modal-list__item">
-                    <span class="modal-list__value">` + value + `</span>
+                    <span class="modal-list__value">` + escapeHtml(value) + `</span>
                     <button class="btnExclude action-remove-contact" data-id="` + key + `" type="button"
                         aria-label="Remover contato ` + (key + 1) + `">×</button>
                 </div>`;
@@ -177,7 +323,7 @@ function renderizeList_keyWord() {
     var html = "";
     $.each(KEYWORD_LIST_TEMP, function (key, value) {
         html += `<div class="modal-list__item">
-                    <span class="modal-list__value">` + value + `</span>
+                    <span class="modal-list__value">` + escapeHtml(value) + `</span>
                     <button class="btnExclude action-remove-keyword" data-id="` + key + `" type="button"
                         aria-label="Remover palavra-chave ` + (key + 1) + `">×</button>
                 </div>`;
@@ -191,7 +337,7 @@ function renderizeList_response() {
     var html = "";
     $.each(RESPONSE_LIST_TEMP, function (key, value) {
         html += `<div class="modal-list__item">
-                    <span class="modal-list__value">` + value + `</span>
+                    <span class="modal-list__value">` + escapeHtml(value) + `</span>
                     <button class="btnExclude action-remove-response" data-id="` + key + `" type="button"
                         aria-label="Remover resposta ` + (key + 1) + `">×</button>
                 </div>`;
@@ -210,7 +356,7 @@ function renderizeList_date() {
         var date2 = temp2[2] + "/" + temp2[1] + "/" + temp2[0];
 
         html += `<div class="modal-list__item">
-                    <span class="modal-list__value">` + date1 + ` – ` + date2 + `</span>
+                    <span class="modal-list__value">` + escapeHtml(date1) + ` – ` + escapeHtml(date2) + `</span>
                     <button class="btnExclude action-remove-date" data-id="` + key + `" type="button"
                         aria-label="Remover período de data ` + (key + 1) + `">×</button>
                 </div>`;
@@ -224,7 +370,7 @@ function renderizeList_time() {
     var html = "";
     $.each(TIME_LIST_TEMP, function (key, value) {
         html += `<div class="modal-list__item">
-                    <span class="modal-list__value">` + value.time1 + ` – ` + value.time2 + `</span>
+                    <span class="modal-list__value">` + escapeHtml(value.time1) + ` – ` + escapeHtml(value.time2) + `</span>
                     <button class="btnExclude action-remove-time" data-id="` + key + `" type="button"
                         aria-label="Remover período de horário ` + (key + 1) + `">×</button>
                 </div>`;
@@ -267,11 +413,13 @@ function modal(id = false) {
 
     var active = true;
 
-    (async () => {
-        var html = await loadHtmlJQ(chrome.runtime.getURL("components/modal.html"));
+    return (async () => {
+        var html = await loadMonitoringFormHtml();
+        if (html === null) return false;
+
         var new_id = parseInt(id) + 1;
 
-        Swal.fire({
+        return Swal.fire({
             width: '70rem',
             title: "Novo Grupo",
             background: "#19191a",
@@ -289,15 +437,21 @@ function modal(id = false) {
                 popup: "monitoring-modal",
             },
             didOpen: () => {
-                if (id) {
+                if (id !== false) {
+                    var record = normalizeMonitoringRecord(MAIN_LIST[id]);
+                    MAIN_LIST[id] = record;
                     $("#swal2-title").text('Editar Registro ' + new_id);
-                    $("#group").val(MAIN_LIST[id]["group_name"]);
-                    CONTACT_LIST_TEMP = MAIN_LIST[id]["contact_list"];
-                    KEYWORD_LIST_TEMP = MAIN_LIST[id]["keyword_list"];
-                    RESPONSE_LIST_TEMP = MAIN_LIST[id]["response_list"];
-                    DATE_LIST_TEMP = MAIN_LIST[id]["date_list"];
-                    TIME_LIST_TEMP = MAIN_LIST[id]["time_list"];
-                    active = MAIN_LIST[id]["active"];
+                    $("#group").val(record.group_name);
+                    CONTACT_LIST_TEMP = record.contact_list.slice();
+                    KEYWORD_LIST_TEMP = record.keyword_list.slice();
+                    RESPONSE_LIST_TEMP = record.response_list.slice();
+                    DATE_LIST_TEMP = record.date_list.map(function (date) {
+                        return { ...date };
+                    });
+                    TIME_LIST_TEMP = record.time_list.map(function (time) {
+                        return { ...time };
+                    });
+                    active = record.active;
 
                     renderizeList_contact();
                     renderizeList_keyWord();
@@ -307,13 +461,11 @@ function modal(id = false) {
                 }
             },
             preConfirm: () => {
-                //msg de erro caso o campo esteja vazio
-
-                return { group };
+                return validateMonitoringForm(Number(id));
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                var group = $("#group").val();
+                var group = result.value.group;
 
                 var data = {
                     "group_name": group,
@@ -325,7 +477,7 @@ function modal(id = false) {
                     "time_list": TIME_LIST_TEMP,
                 };
 
-                if (id) {
+                if (id !== false) {
                     MAIN_LIST[id] = data;
                 } else {
                     MAIN_LIST.push(data);
@@ -349,75 +501,47 @@ $(document).ready(function () {
 
 // ------------ functions for the Modal ----------------
 
-$(document).on("click", "#btnAdd", function () {
-    modal();
-});
-
 $(document).on("click", "#btnEdit", function () {
     var id = $(this).attr('data-id');
     modal(id);
 });
 
 $(document).on("click", "#btn_add_contact", function () {
-    var value = $("#input_contact").val();
-
-    if (!value) {
-        hiddenText("#hidden_contact", "Digite um texto para incluir na lista");
-    } else if (CONTACT_LIST_TEMP.includes(value)) {
-        hiddenText("#hidden_contact", "Esse texto já foi incluido");
-    } else {
-        $("#input_contact").val("");
-        CONTACT_LIST_TEMP.push(value);
-        renderizeList_contact();
-    }
+    addTextValue("#input_contact", CONTACT_LIST_TEMP, renderizeList_contact);
 });
 
 $(document).on("click", "#btn_add_keyWord", function () {
-    var value = $("#input_keyWord").val();
-
-    if (!value) {
-        hiddenText("#hidden_keyWord", "Digite um texto para incluir na lista");
-    } else if (KEYWORD_LIST_TEMP.includes(value)) {
-        hiddenText("#hidden_keyWord", "Esse texto já foi incluido");
-    } else {
-        $("#input_keyWord").val("");
-        KEYWORD_LIST_TEMP.push(value);
-        renderizeList_keyWord();
-    }
+    addTextValue("#input_keyWord", KEYWORD_LIST_TEMP, renderizeList_keyWord);
 });
 
 $(document).on("click", "#btn_add_response", function () {
-    var value = $("#input_response").val();
-
-    if (!value) {
-        hiddenText("#hidden_response", "Digite um texto para incluir na lista");
-    } else if (RESPONSE_LIST_TEMP.includes(value)) {
-        hiddenText("#hidden_response", "Esse texto já foi incluido");
-    } else {
-        $("#input_response").val("");
-        RESPONSE_LIST_TEMP.push(value);
-        renderizeList_response();
-    }
+    addTextValue("#input_response", RESPONSE_LIST_TEMP, renderizeList_response);
 });
 
 $(document).on("click", "#btn_add_date", function () {
     var date1 = $("#input_date1").val();
     var date2 = $("#input_date2").val();
+    var date1IsValid = isValidDateValue(date1);
+    var date2IsValid = isValidDateValue(date2);
     var date = {
         date1, date2
     }
 
-    var value1 = new Date($("#input_date1").val() + 'T12:00:00');
-    var value2 = new Date($("#input_date2").val() + 'T12:00:00');
-
-    if (value1 == "Invalid Date" || value2 == "Invalid Date") {
-        hiddenText("#hidden_date", "Digite uma data para incluir na lista");
-    } else if (value1 >= value2) {
-        hiddenText("#hidden_date", "Datas inválidas");
-    } else if (DATE_LIST_TEMP.includes(date)) {
-        hiddenText("#hidden_date", "Essas datas já foram incluídas");
+    if (!date1 || !date2) {
+        showRangeValidation("Informe as duas datas", !date1 ? "#input_date1" : "#input_date2");
+    } else if (!date1IsValid || !date2IsValid) {
+        showRangeValidation(
+            "Informe uma faixa de datas válida",
+            !date1IsValid ? "#input_date1" : "#input_date2"
+        );
+    } else if (date1 >= date2) {
+        showRangeValidation("Informe uma faixa de datas válida", "#input_date2");
+    } else if (DATE_LIST_TEMP.some(function (value) {
+        return value.date1 === date1 && value.date2 === date2;
+    })) {
+        showRangeValidation("Essa faixa de datas já foi incluída", "#input_date1");
     } else {
-
+        resetRangeValidation();
         $("#input_date1").val("");
         $("#input_date2").val("");
         DATE_LIST_TEMP.push(date);
@@ -428,18 +552,27 @@ $(document).on("click", "#btn_add_date", function () {
 $(document).on("click", "#btn_add_time", function () {
     var time1 = $("#input_time1").val();
     var time2 = $("#input_time2").val();
+    var time1IsValid = isValidTimeValue(time1);
+    var time2IsValid = isValidTimeValue(time2);
     var time = {
         time1, time2
     }
 
     if (!time1 || !time2) {
-        hiddenText("#hidden_time", "Digite um horário para incluir na lista");
-    } else if (time1 >= time2) {
-        hiddenText("#hidden_time", "Horários inválidos");
-    } else if (TIME_LIST_TEMP.includes(time)) {
-        hiddenText("#hidden_time", "Esses horários já foram incluídos");
+        showRangeValidation("Informe os dois horários", !time1 ? "#input_time1" : "#input_time2");
+    } else if (!time1IsValid || !time2IsValid) {
+        showRangeValidation(
+            "Informe uma faixa de horários válida",
+            !time1IsValid ? "#input_time1" : "#input_time2"
+        );
+    } else if (time1 === time2) {
+        showRangeValidation("Informe uma faixa de horários válida", "#input_time2");
+    } else if (TIME_LIST_TEMP.some(function (value) {
+        return value.time1 === time1 && value.time2 === time2;
+    })) {
+        showRangeValidation("Essa faixa de horários já foi incluída", "#input_time1");
     } else {
-
+        resetRangeValidation();
         $("#input_time1").val("");
         $("#input_time2").val("");
         TIME_LIST_TEMP.push(time);
@@ -495,10 +628,11 @@ $(document).on("click", "#btnAdd", function () {
     DATE_LIST_TEMP = [];
     TIME_LIST_TEMP = [];
 
-    (async () => {
-        var html = await loadHtmlJQ(chrome.runtime.getURL("components/modal.html"));
+    return (async () => {
+        var html = await loadMonitoringFormHtml();
+        if (html === null) return false;
 
-        Swal.fire({
+        return Swal.fire({
             width: '70rem',
             title: "Novo Grupo",
             background: "#19191a",
@@ -516,43 +650,11 @@ $(document).on("click", "#btnAdd", function () {
                 popup: "monitoring-modal",
             },
             preConfirm: () => {
-                var group = $("#group").val();
-
-                if (!group) {
-                    hiddenText("#hidden_group", "Digite o nome do grupo");
-                    $("#group").trigger("focus");
-                    return false;
-                }
-
-                if ((MAIN_LIST.map(item => (item.group_name))).includes(group)) {
-                    hiddenText("#hidden_group", "Nome de grupo já existe na lista");
-                    $("#group").trigger("focus");
-                    return false;
-                }
-
-                // if (CONTACT_LIST_TEMP.length == 0) {
-                //     hiddenText("#hidden_contact", "Insira ao menos um Contato");
-                //     $("#input_contact").trigger("focus");
-                //     return false;
-                // }
-
-                if (KEYWORD_LIST_TEMP.length == 0) {
-                    hiddenText("#hidden_keyWord", "Insira ao menos uma Palavra-Chave");
-                    $("#input_keyWord").trigger("focus");
-                    return false;
-                }
-
-                if (RESPONSE_LIST_TEMP.length == 0) {
-                    hiddenText("#hidden_response", "Insira ao menos uma Resposta");
-                    $("#input_response").trigger("focus");
-                    return false;
-                }
-
-                return { group };
+                return validateMonitoringForm();
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                var group = $("#group").val();
+                var group = result.value.group;
 
                 var data = {
                     "group_name": group,
