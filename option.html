@@ -1,14 +1,16 @@
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>WhatsApp Monitor</title>
 
-    <script src="assets/js/jquery.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/jquery.btnswitch.min.js"></script>
-    <script src="assets/js/sweetalert2.min.js"></script>
+    <script src="assets/js/jquery.js" defer></script>
+    <script src="assets/js/bootstrap.bundle.min.js" defer></script>
+    <script src="assets/js/jquery.btnswitch.min.js" defer></script>
+    <script src="assets/js/sweetalert2.min.js" defer></script>
+    <script src="option.js" defer></script>
 
     <link rel="stylesheet" href="assets/css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/style_option.css">
@@ -19,12 +21,12 @@
 <body>
 
     <div class="divbtnAdd">
-        <div class="row d-flex justify-content-center align-items-center" style="padding: .5rem;">
+        <div class="row d-flex justify-content-center align-items-center p-2">
             <div class="col-8">
-                <input id="btnAdd" class="btn btnAdd" type="button" value="Adicionar Monitoramento">
+                <button id="btnAdd" class="btn btnAdd" type="button">Adicionar Monitoramento</button>
             </div>
             <div class="col-3">
-                <input id="btnSave" class="btn btnSave" type="button" value="Salvar">
+                <button id="btnSave" class="btn btnSave" type="button">Salvar</button>
             </div>
         </div>
     </div>
@@ -36,7 +38,7 @@
             <div class="col-12 mt-2">
                 <div class="row">
                     <div class="col-12 d-flex justify-content-center">
-                        <label class="title">WhatsApp Web Monitor</label>
+                        <h1 class="title m-0">WhatsApp Web Monitor</h1>
                     </div>
                 </div>
             </div>
@@ -45,9 +47,9 @@
 
         <div class="row">
 
-            <div class="col-10 mt-2" style="margin: 5rem; margin-bottom: 0px">
+            <div class="col-10 instructions">
                 <div class="row">
-                    <div class="col-12 d-flex justify-content-left">
+                    <div class="col-12 d-flex justify-content-start">
                         <section>
                             <h3>Como configurar o monitoramento?</h3>
                             <p>
@@ -77,12 +79,15 @@
                                 <b class="important">Passo 3 →</b>
                                 Abra a conversa que deseja monitorar.
                             </p>
-                            <b class="important">Passo 4 →</b>
-                            Ative o "WhatsApp Web Monitor" na tela do seu WhatsApp Web e espere as mensagens chegarem. O monitoramente funciona mesmo a tela esteja em outra gruia, então se sinta livre para usar o comportamenteo livremente, desde que o WhatsApp Web esteja aberto.
+                            <p>
+                                <b class="important">Passo 4 →</b>
+                                Ative o "WhatsApp Web Monitor" na tela do WhatsApp Web e aguarde a chegada das
+                                mensagens. O monitoramento continuará funcionando quando outra aba estiver ativa,
+                                desde que o WhatsApp Web permaneça aberto.
                             </p>
                             <p>
-                                <b class="important">PS: </b> É possível ativar/desativar os grupos a serem monitorados
-                                em qualquer momento, apenas lembre de salvar!
+                                <b class="important">Observação:</b> É possível ativar ou desativar os monitoramentos
+                                a qualquer momento. Lembre-se de salvar as alterações.
                             </p>
                         </section>
                     </div>
@@ -91,12 +96,12 @@
 
         </div>
 
-        <div class="col-11" style="margin: 5rem; margin-top: 2rem; background-color: #292929; border-radius: 20px;">
+        <div class="col-11 group-list-panel">
 
             <div class="row">
 
                 <div class="col-3 divSubtitle d-flex justify-content-center align-items-center">
-                    <label class="subtitle">LISTA DE MONITORAMENTOS</label>
+                    <h2 class="subtitle m-0">LISTA DE MONITORAMENTOS</h2>
                 </div>
 
             </div>
@@ -117,5 +122,3 @@
 </body>
 
 </html>
-
-<script src="option.js"></script>
