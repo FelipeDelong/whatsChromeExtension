@@ -14,10 +14,12 @@
 
 .swal2-confirm {
     background-color: var(--modal-confirm-button-background) !important;
+    color: var(--theme-color-text-inverse) !important;
 }
 
 .swal2-cancel {
     background-color: var(--modal-cancel-button-background) !important;
+    color: var(--theme-color-text-inverse) !important;
 }
 
 .swal2-container.swal2-backdrop-show,
