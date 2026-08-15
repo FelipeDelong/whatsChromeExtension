@@ -150,10 +150,10 @@ async function loadMonitoringFormHtml() {
             icon: "error",
             title: "Não foi possível abrir o formulário",
             text: "Recarregue a página e tente novamente.",
-            background: "#19191a",
-            color: "#e1e1e1",
+            background: "var(--modal-background)",
+            color: "var(--modal-text)",
             confirmButtonText: "Fechar",
-            confirmButtonColor: "#E50091",
+            confirmButtonColor: "var(--modal-confirm-button-background)",
         });
         return null;
     }
@@ -308,7 +308,7 @@ function renderizeMainList(list = MAIN_LIST) {
                         </div>
                         <div class="col-12">
                             <div class="d-flex justify-content-center">
-                                <div style="border-top: 1px solid #999999; width: 95%;"></div>
+                                <div style="border-top: 1px solid var(--theme-color-border-muted); width: 95%;"></div>
                             </div>
                         </div>
                         <div class="col-12">
@@ -336,7 +336,7 @@ function renderizeMainList(list = MAIN_LIST) {
 
                         <div class="col-12">
                             <div class="d-flex justify-content-center">
-                                <div style="border-top: 1px solid #999999; width: 95%;"></div>
+                                <div style="border-top: 1px solid var(--theme-color-border-muted); width: 95%;"></div>
                             </div>
                         </div>
                         <div class="col-12">
@@ -488,16 +488,16 @@ function modal(id = false) {
         return Swal.fire({
             width: '70rem',
             title: "Novo Grupo",
-            background: "#19191a",
-            color: "#e1e1e1",
+            background: "var(--modal-background)",
+            color: "var(--modal-text)",
             confirmButtonText: "Adicionar",
-            confirmButtonColor: "#E50091",
+            confirmButtonColor: "var(--modal-confirm-button-background)",
             showCancelButton: true,
             cancelButtonText: "Cancelar",
-            cancelButtonColor: "#6E6E6E",
+            cancelButtonColor: "var(--modal-cancel-button-background)",
             reverseButtons: true,
             allowOutsideClick: false,
-            backdrop: "rgba(0,0,0,0.55)",
+            backdrop: "var(--modal-backdrop-background)",
             html: html,
             customClass: {
                 popup: "monitoring-modal",
@@ -657,7 +657,7 @@ $(document).on("click", "#btn_add_time", function () {
             "Informe uma faixa de horários válida",
             !time1IsValid ? "#input_time1" : "#input_time2"
         );
-    } else if (time1 === time2) {
+    } else if (time1 >= time2) {
         showRangeValidation("Informe uma faixa de horários válida", "#input_time2");
     } else if (TIME_LIST_TEMP.some(function (value) {
         return value.time1 === time1 && value.time2 === time2;
@@ -727,16 +727,16 @@ $(document).on("click", "#btnAdd", function () {
         return Swal.fire({
             width: '70rem',
             title: "Novo Grupo",
-            background: "#19191a",
-            color: "#e1e1e1",
+            background: "var(--modal-background)",
+            color: "var(--modal-text)",
             confirmButtonText: "Adicionar",
-            confirmButtonColor: "#E50091",
+            confirmButtonColor: "var(--modal-confirm-button-background)",
             showCancelButton: true,
             cancelButtonText: "Cancelar",
-            cancelButtonColor: "#6E6E6E",
+            cancelButtonColor: "var(--modal-cancel-button-background)",
             reverseButtons: true,
             allowOutsideClick: false,
-            backdrop: "rgba(0,0,0,0.55)",
+            backdrop: "var(--modal-backdrop-background)",
             html: html,
             customClass: {
                 popup: "monitoring-modal",
@@ -771,16 +771,16 @@ $(document).on("click", "#btnActive", function () {
 
     Swal.fire({
         title: "Ativar o grupo " + (id + 1) + "?",
-        background: "#19191a",
-        color: "#e1e1e1",
+        background: "var(--modal-background)",
+        color: "var(--modal-text)",
         confirmButtonText: "Confirmar",
-        confirmButtonColor: "#E50091",
+        confirmButtonColor: "var(--modal-confirm-button-background)",
         showCancelButton: true,
         cancelButtonText: "Cancelar",
-        cancelButtonColor: "#6E6E6E",
+        cancelButtonColor: "var(--modal-cancel-button-background)",
         reverseButtons: true,
         allowOutsideClick: false,
-        backdrop: "rgba(0,0,0,0.55)",
+        backdrop: "var(--modal-backdrop-background)",
     }).then((result) => {
         if (result.isConfirmed) {
             var value = MAIN_LIST[id].active;
@@ -795,16 +795,16 @@ $(document).on("click", "#btnDelete", function () {
 
     Swal.fire({
         title: "Excluir o grupo " + (id + 1) + "?",
-        background: "#19191a",
-        color: "#e1e1e1",
+        background: "var(--modal-background)",
+        color: "var(--modal-text)",
         confirmButtonText: "Confirmar",
-        confirmButtonColor: "#E50091",
+        confirmButtonColor: "var(--modal-confirm-button-background)",
         showCancelButton: true,
         cancelButtonText: "Cancelar",
-        cancelButtonColor: "#6E6E6E",
+        cancelButtonColor: "var(--modal-cancel-button-background)",
         reverseButtons: true,
         allowOutsideClick: false,
-        backdrop: "rgba(0,0,0,0.55)",
+        backdrop: "var(--modal-backdrop-background)",
     }).then((result) => {
         if (result.isConfirmed) {
             excludeList(id, 0);
@@ -842,16 +842,16 @@ $(document).on('click', '#btnSave', function () {
 
     Swal.fire({
         title: "Salvar Alterações?",
-        background: "#19191a",
-        color: "#e1e1e1",
+        background: "var(--modal-background)",
+        color: "var(--modal-text)",
         confirmButtonText: "Confirmar",
-        confirmButtonColor: "#E50091",
+        confirmButtonColor: "var(--modal-confirm-button-background)",
         showCancelButton: true,
         cancelButtonText: "Cancelar",
-        cancelButtonColor: "#6E6E6E",
+        cancelButtonColor: "var(--modal-cancel-button-background)",
         reverseButtons: true,
         allowOutsideClick: false,
-        backdrop: "rgba(0,0,0,0.55)",
+        backdrop: "var(--modal-backdrop-background)",
     }).then((result) => {
         if (result.isConfirmed) {
             chrome.storage.local.set({ [LIST_NAME]: MAIN_LIST }, () => {
@@ -873,8 +873,8 @@ $(document).on('click', '#btnSave', function () {
                 Toast.fire({
                     icon: "success",
                     title: "Salvo Com Sucesso",
-                    background: "#19191a",
-                    color: "#e1e1e1",
+                    background: "var(--modal-background)",
+                    color: "var(--modal-text)",
                 });
             });
         }

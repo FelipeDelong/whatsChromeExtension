@@ -46,6 +46,25 @@ function createHarness({
         const element = elements.get(selector);
 
         return {
+            attr(name, value) {
+                if (value === undefined) return element[name];
+                element[name] = value;
+                return this;
+            },
+            fadeIn(duration, callback) {
+                element.hidden = false;
+                if (typeof callback === "function") callback.call(selector);
+                return this;
+            },
+            fadeOut(duration, callback) {
+                element.hidden = true;
+                if (typeof callback === "function") callback.call(selector);
+                return this;
+            },
+            hide() {
+                element.hidden = true;
+                return this;
+            },
             html(value) {
                 if (value === undefined) return element.html;
                 element.html = value;
@@ -54,6 +73,13 @@ function createHarness({
             prop(name, value) {
                 if (value === undefined) return element[name];
                 element[name] = value;
+                return this;
+            },
+            show() {
+                element.hidden = false;
+                return this;
+            },
+            stop() {
                 return this;
             },
         };

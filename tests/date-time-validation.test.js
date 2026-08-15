@@ -164,7 +164,7 @@ test("date ranges reject missing, invalid, reversed, and duplicate values", () =
     assert.equal(harness.validationMessages.at(-1), "Essa faixa de datas já foi incluída");
 });
 
-test("time ranges reject invalid values, accept overnight, and prevent duplicates", () => {
+test("time ranges reject invalid, reversed, equal, and duplicate values", () => {
     const harness = createHarness();
     const addTime = harness.handler("#btn_add_time");
 
@@ -185,13 +185,19 @@ test("time ranges reject invalid values, accept overnight, and prevent duplicate
 
     setValues(harness, { "#input_time1": "22:00", "#input_time2": "06:00" });
     addTime();
+    assert.equal(harness.validationMessages.at(-1), "Informe uma faixa de horários válida");
+    assert.equal(harness.elements.get("#input_time2").focusCount, 3);
+    assert.equal(harness.context.TIME_LIST_TEMP.length, 0);
+
+    setValues(harness, { "#input_time1": "06:00", "#input_time2": "22:00" });
+    addTime();
     assert.deepEqual(
         Array.from(harness.context.TIME_LIST_TEMP, (value) => ({ ...value })),
-        [{ time1: "22:00", time2: "06:00" }],
+        [{ time1: "06:00", time2: "22:00" }],
     );
     assert.equal(harness.resetCount, 1);
 
-    setValues(harness, { "#input_time1": "22:00", "#input_time2": "06:00" });
+    setValues(harness, { "#input_time1": "06:00", "#input_time2": "22:00" });
     addTime();
     assert.equal(harness.context.TIME_LIST_TEMP.length, 1);
     assert.equal(harness.validationMessages.at(-1), "Essa faixa de horários já foi incluída");

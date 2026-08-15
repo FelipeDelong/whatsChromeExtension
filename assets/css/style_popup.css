@@ -107,13 +107,13 @@ body {
     text-align: center;
     font-size: 1.5rem;
     padding: 1rem;
-    color: #E50091;
+    color: var(--theme-color-primary);
 }
 
 .loader {
     width: 5rem;
     height: 5rem;
-    border: 5px solid #FFF;
+    border: 5px solid var(--theme-color-text-secondary);
     border-radius: 50%;
     display: inline-block;
     position: absolute;
@@ -121,10 +121,9 @@ body {
     top: 5rem;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
-}
-
-.loader::after {
-    content: "";
+  }
+  .loader::after {
+    content: '';  
     box-sizing: border-box;
     position: absolute;
     left: 50%;
@@ -134,15 +133,14 @@ body {
     height: 6rem;
     border-radius: 50%;
     border: 5px solid;
-    border-color: #E50091 transparent;
-}
-
-@keyframes rotation {
+    border-color: var(--theme-color-primary) transparent;
+  }
+  
+  @keyframes rotation {
     0% {
-        transform: rotate(0deg);
+      transform: rotate(0deg);
     }
-
     100% {
-        transform: rotate(360deg);
+      transform: rotate(360deg);
     }
-}
+  } 
