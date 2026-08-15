@@ -2,17 +2,23 @@ div.swal2-popup.monitoring-modal {
     width: min(70rem, calc(100vw - 2rem)) !important;
     max-width: calc(100vw - 2rem);
     max-height: calc(100dvh - 2rem);
-    border: 1px solid #343a40;
+    border: 1px solid var(--theme-color-border);
     border-radius: 1rem;
     padding: clamp(1rem, 2.5vw, 1.75rem);
     overflow: auto;
-    box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .45);
+    background: var(--modal-background) !important;
+    color: var(--modal-text) !important;
+    box-shadow: 0 1.5rem 4rem var(--modal-backdrop-background);
+}
+
+div.swal2-container.swal2-backdrop-show {
+    background: transparent;
 }
 
 .monitoring-modal .swal2-title {
     margin: 0;
     padding: 0 0 1.25rem;
-    color: #fff;
+    color: var(--modal-text);
     font-size: clamp(1.5rem, 3vw, 2rem);
     line-height: 1.2;
     overflow-wrap: normal;
@@ -23,7 +29,7 @@ div.swal2-popup.monitoring-modal {
     margin: 0;
     padding: 0;
     overflow: visible;
-    color: #e7ebef;
+    color: var(--modal-text);
     font-size: 1rem;
     line-height: 1.5;
     text-align: start;
@@ -45,8 +51,18 @@ div.swal2-popup.monitoring-modal {
     white-space: nowrap;
 }
 
+.monitoring-modal div.swal2-actions .swal2-confirm {
+    background: var(--modal-confirm-button-background) !important;
+    color: var(--theme-color-text-inverse) !important;
+}
+
+.monitoring-modal div.swal2-actions .swal2-cancel {
+    background: var(--modal-cancel-button-background) !important;
+    color: var(--theme-color-text-inverse) !important;
+}
+
 .monitoring-modal div.swal2-actions .swal2-styled:focus-visible {
-    outline: 3px solid #fff;
+    outline: 3px solid var(--theme-color-text);
     outline-offset: 3px;
 }
 
@@ -68,10 +84,10 @@ div.swal2-popup.monitoring-modal {
 }
 
 .monitor-form__identity {
-    border: 1px solid #3d444c;
+    border: 1px solid var(--theme-color-border);
     border-radius: .8rem;
     padding: 1rem;
-    background: #202429;
+    background: var(--option-card-background);
 }
 
 .monitor-form__lists {
@@ -83,10 +99,10 @@ div.swal2-popup.monitoring-modal {
 
 .repeatable-field,
 .schedule-field {
-    border: 1px solid #3d444c;
+    border: 1px solid var(--theme-color-border);
     border-radius: .8rem;
     padding: 1rem;
-    background: #202429;
+    background: var(--option-card-background);
 }
 
 .repeatable-field {
@@ -111,7 +127,7 @@ div.swal2-popup.monitoring-modal {
 .form-label,
 .form-field label,
 .schedule-field legend {
-    color: #f5f7fa;
+    color: var(--theme-color-text);
     font-size: .92rem;
     font-weight: 700;
 }
@@ -125,18 +141,18 @@ div.swal2-popup.monitoring-modal {
 }
 
 .schedule-field legend span {
-    color: #aeb5bd;
+    color: var(--theme-color-text-secondary);
     font-weight: 500;
 }
 
 .required-indicator {
-    color: #ff4dbd;
+    color: var(--theme-color-important);
 }
 
 .form-hint {
     display: block;
     margin: 0;
-    color: #aeb5bd;
+    color: var(--theme-color-text-secondary);
     font-size: .78rem;
     font-weight: 400;
     line-height: 1.4;
@@ -144,7 +160,7 @@ div.swal2-popup.monitoring-modal {
 
 .field-error,
 .textHidden {
-    color: #ff9aa2;
+    color: var(--theme-color-danger);
     font-size: .85rem;
     font-weight: 650;
 }
@@ -153,27 +169,27 @@ div.swal2-popup.monitoring-modal {
     width: 100%;
     min-width: 0;
     min-height: 3rem;
-    border: 1px solid #59616a;
+    border: 1px solid var(--theme-color-border-muted);
     border-radius: .65rem;
     padding: .65rem .75rem;
-    background: #121518;
-    color: #f5f7fa;
+    background: var(--option-background);
+    color: var(--theme-color-text);
     font-size: 1rem;
     line-height: 1.25;
 }
 
 .monitor-form .form-control::placeholder {
-    color: #89919a;
+    color: var(--theme-color-text-muted);
     opacity: 1;
 }
 
 .monitor-form .form-control:hover {
-    border-color: #7b8490;
+    border-color: var(--theme-color-border);
 }
 
 .monitor-form .form-control:focus-visible {
-    border-color: #ff4dbd;
-    outline: 3px solid rgba(255, 77, 189, .32);
+    border-color: var(--theme-color-primary);
+    outline: 3px solid var(--theme-color-important);
     outline-offset: 2px;
     box-shadow: none;
 }
@@ -196,28 +212,28 @@ div.swal2-popup.monitoring-modal {
     min-height: 3rem;
     align-items: center;
     justify-content: center;
-    border: 1px solid #247da7;
+    border: 1px solid var(--modal-add-button-background);
     border-radius: .65rem;
     padding: .65rem .85rem;
-    background: #1c719b;
-    color: #fff;
+    background: var(--modal-add-button-background);
+    color: var(--theme-color-text-inverse);
     font-weight: 700;
     line-height: 1.2;
     white-space: nowrap;
 }
 
 .btnAdd2:hover {
-    border-color: #3198c9;
-    background: #175f82;
-    color: #fff;
+    border-color: var(--modal-add-button-background-hover);
+    background: var(--modal-add-button-background-hover);
+    color: var(--theme-color-text-inverse);
 }
 
 .btnAdd2:focus-visible,
 .btnExclude:focus-visible,
 .modal-list__remove:focus-visible {
-    outline: 3px solid #fff;
+    outline: 3px solid var(--theme-color-text);
     outline-offset: 3px;
-    box-shadow: 0 0 0 6px rgba(28, 113, 155, .35);
+    box-shadow: 0 0 0 6px var(--theme-color-info-hover);
 }
 
 .modalCard,
@@ -227,13 +243,13 @@ div.swal2-popup.monitoring-modal {
     min-height: 4.35rem;
     max-height: 12rem;
     align-content: start;
-    border: 1px solid #464d55;
+    border: 1px solid var(--theme-color-border);
     border-radius: .65rem;
     padding: .55rem;
     overflow-y: auto;
-    background: #16191c;
+    background: var(--option-background);
     gap: .45rem;
-    scrollbar-color: #59616a transparent;
+    scrollbar-color: var(--theme-color-scrollbar-thumb) var(--theme-color-scrollbar-track);
     scrollbar-width: thin;
 }
 
@@ -246,7 +262,7 @@ div.swal2-popup.monitoring-modal {
 .modal-list:empty::before {
     align-self: center;
     justify-self: center;
-    color: #8f979f;
+    color: var(--theme-color-text-muted);
     content: "Nenhum item incluído";
     font-size: .82rem;
     font-style: italic;
@@ -257,7 +273,7 @@ div.swal2-popup.monitoring-modal {
     align-self: center;
     justify-self: center;
     margin: 0;
-    color: #8f979f;
+    color: var(--theme-color-text-muted);
     font-size: .82rem;
     font-style: italic;
     text-align: center;
@@ -269,15 +285,15 @@ div.swal2-popup.monitoring-modal {
     min-width: 0;
     align-items: center;
     gap: .5rem;
-    border: 1px solid #3a4148;
+    border: 1px solid var(--theme-color-border-muted);
     border-radius: .5rem;
     padding: .45rem .5rem .45rem .65rem;
-    background: #24292f;
+    background: var(--option-card-background);
 }
 
 .modal-list__value {
     min-width: 0;
-    color: #edf0f3;
+    color: var(--theme-color-text);
     overflow-wrap: anywhere;
 }
 
@@ -294,11 +310,11 @@ div.swal2-popup.monitoring-modal {
     min-height: 2.75rem;
     align-items: center;
     justify-content: center;
-    border: 1px solid #9f414a;
+    border: 1px solid var(--theme-color-danger);
     border-radius: .55rem;
     padding: 0;
-    background: #62252b;
-    color: #fff;
+    background: var(--modal-exclude-button-color);
+    color: var(--theme-color-text-inverse);
     font-size: 1.25rem;
     font-weight: 750;
     line-height: 1;
@@ -307,9 +323,9 @@ div.swal2-popup.monitoring-modal {
 
 .btnExclude:hover,
 .modal-list__remove:hover {
-    border-color: #cc5963;
-    background: #812f37;
-    color: #fff;
+    border-color: var(--theme-color-danger);
+    background: var(--theme-color-primary-hover);
+    color: var(--theme-color-text-inverse);
 }
 
 .monitor-form__schedule {
@@ -337,7 +353,7 @@ div.swal2-popup.monitoring-modal {
 }
 
 .form-field--compact label {
-    color: #cbd1d7;
+    color: var(--theme-color-text-secondary);
     font-size: .78rem;
     font-weight: 650;
 }
@@ -346,7 +362,7 @@ div.swal2-popup.monitoring-modal {
     display: inline-flex;
     min-height: 3rem;
     align-items: center;
-    color: #aeb5bd;
+    color: var(--theme-color-text-secondary);
     font-size: .82rem;
     font-weight: 650;
 }
@@ -457,118 +473,3 @@ div.swal2-popup.monitoring-modal {
     }
 }
 
-/* Theme variables are declared by the selected theme stylesheet. */
-div.swal2-popup.monitoring-modal {
-    border-color: var(--theme-color-border, #343a40);
-    background: var(--modal-background, #19191a) !important;
-    color: var(--modal-text, #e1e1e1) !important;
-}
-
-.monitoring-modal .swal2-title,
-.monitoring-modal div.swal2-html-container {
-    color: var(--modal-text, #e7ebef);
-}
-
-.monitor-form__identity,
-.repeatable-field,
-.schedule-field {
-    border-color: var(--theme-color-border, #3d444c);
-    background: var(--option-card-background, #202429);
-}
-
-.form-label,
-.form-field label,
-.schedule-field legend {
-    color: var(--theme-color-text, #f5f7fa);
-}
-
-.schedule-field legend span,
-.form-hint,
-.schedule-field__connector,
-.form-field--compact label {
-    color: var(--theme-color-text-secondary, #aeb5bd);
-}
-
-.required-indicator {
-    color: var(--theme-color-important, #ff4dbd);
-}
-
-.monitor-form .form-control {
-    border-color: var(--theme-color-border-muted, #59616a);
-    background: var(--option-background, #121518);
-    color: var(--theme-color-text, #f5f7fa);
-}
-
-.monitor-form .form-control::placeholder {
-    color: var(--theme-color-text-secondary, #89919a);
-}
-
-.monitor-form .form-control:hover {
-    border-color: var(--theme-color-border, #7b8490);
-}
-
-.monitor-form .form-control:focus-visible {
-    border-color: var(--theme-color-primary, #ff4dbd);
-}
-
-.btnAdd2 {
-    border-color: var(--modal-add-button-background, #247da7);
-    background: var(--modal-add-button-background, #1c719b);
-    color: var(--theme-color-text-inverse, #fff);
-}
-
-.btnAdd2:hover {
-    border-color: var(--modal-add-button-background-hover, #3198c9);
-    background: var(--modal-add-button-background-hover, #175f82);
-}
-
-.modalCard,
-.modalCard2,
-.modal-list {
-    border-color: var(--theme-color-border, #464d55);
-    background: var(--option-background, #16191c);
-    scrollbar-color: var(--theme-color-scrollbar-thumb, #59616a)
-        var(--theme-color-scrollbar-track, transparent);
-}
-
-.modal-list:empty::before,
-.modal-list__empty {
-    color: var(--theme-color-text-muted, #8f979f);
-}
-
-.modal-list__item {
-    border-color: var(--theme-color-border, #3a4148);
-    background: var(--option-card-background, #24292f);
-}
-
-.modal-list__value {
-    color: var(--theme-color-text, #edf0f3);
-}
-
-.btnExclude,
-.modal-list__remove,
-.action-remove-contact,
-.action-remove-keyword,
-.action-remove-response,
-.action-remove-date,
-.action-remove-time {
-    border-color: var(--theme-color-danger, #9f414a);
-    background: var(--modal-exclude-button-color, #62252b);
-    color: var(--theme-color-text-inverse, #fff);
-}
-
-.btnExclude:hover,
-.modal-list__remove:hover {
-    border-color: var(--theme-color-danger, #cc5963);
-    background: var(--theme-color-danger, #812f37);
-}
-
-.monitoring-modal div.swal2-actions .swal2-confirm {
-    background: var(--modal-confirm-button-background, #e50091) !important;
-    color: var(--theme-color-text-inverse, #fff) !important;
-}
-
-.monitoring-modal div.swal2-actions .swal2-cancel {
-    background: var(--modal-cancel-button-background, #6e6e6e) !important;
-    color: var(--theme-color-text-inverse, #fff) !important;
-}

@@ -70,22 +70,44 @@ async function focusWhats(target) {
 }
 
 function startLoading() {
-    $("#screen1").prop("hidden", false);
-    $("#screen2").prop("hidden", true);
+    $("#screen1").attr("hidden", false).show();
+    $("#screen2").attr("hidden", true).hide();
 }
 
-function finishLoading() {
-    $("#screen1").prop("hidden", true);
-    $("#screen2").prop("hidden", false);
+function switchScreen() {
+    return new Promise((resolve) => {
+        var $s1 = $("#screen1");
+        var $s2 = $("#screen2");
+
+        $s2.attr("hidden", false).show();
+        $s1.attr("hidden", true).hide();
+
+        $s2.stop(true, true).fadeOut(300, function () {
+            $(this).attr("hidden", true);
+        });
+
+        $s1.attr("hidden", false).hide().stop(true, true).fadeIn(200);
+
+        setTimeout(function () {
+            $s1.stop(true, true).fadeOut(300, function () {
+                $(this).attr("hidden", true);
+            });
+
+            $s2.attr("hidden", false).hide().stop(true, true).fadeIn(200, function () {
+                resolve(true);
+            });
+        }, 500);
+    });
 }
 
-$(document).ready(async function () {
+async function finishLoading() {
+    await switchScreen();
+}
+
+$(document).ready(function () {
     chrome.storage.local.get([THEME_NAME], (res) => {
         applyTheme(res.theme);
     });
-
-    id_tab = await openOrFocusWhats(false);
-    checkMonitor(id_tab);
 });
 function renderOperationError() {
     $("#hyperlink").html(
@@ -270,7 +292,7 @@ async function setMonitorState(enabled) {
         return false;
     } finally {
         monitorOperationInProgress = false;
-        finishLoading();
+        await finishLoading();
     }
 }
 
@@ -290,7 +312,7 @@ async function refreshPopup() {
         renderOperationError();
         return false;
     } finally {
-        finishLoading();
+        await finishLoading();
     }
 }
 
